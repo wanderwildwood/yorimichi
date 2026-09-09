@@ -66,19 +66,10 @@ jobs:
       # installed it, so this asserts positively that the APK carries the one expected
       # certificate. A check of the form "it is not <some known wrong key>" passes for
       # every other wrong key and for an unsigned build, which is why it is not used here.
-      #
-      # EXPECTED is empty until this app has a key. That is deliberate: an empty value
-      # stops the release rather than waving it through, and filling it in is part of
-      # making the key, not something to be remembered later.
       - name: Verify the signing certificate
         env:
-          EXPECTED: ''
+          EXPECTED: f28551f6ba160850f930cc966031475c9152bbc2aaf30f8972497853b7fc28af
         run: |
-          if [ -z "$EXPECTED" ]; then
-            echo "::error::No expected certificate is recorded for this app yet. Generate the"
-            echo "::error::keystore, then put its SHA-256 here and in the local build script."
-            exit 1
-          fi
           apk=$(find app/build/outputs/apk/release -maxdepth 1 -name '*.apk')
           apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
           certs=$("$apksigner" verify --print-certs "$apk")
