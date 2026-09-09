@@ -32,17 +32,45 @@ already ships with.
   phone was twenty minutes ago is a different walk.
 - Walks of ¼ mile to 5 miles, or 500 m to 10 km. Two words of settings otherwise.
 
-## What it does not claim
+## A hundred years of this
 
-The numbers come from the phone's own generator, seeded from the kernel's entropy pool.
-They are not quantum, nothing is fetched from a server, and no claim is made that an
-intention held while pressing the button reaches the arithmetic. The apps this one is
-descended from make that claim; the [Fatum papers](https://github.com/anonyhoney/fatum-en)
-are worth reading, and it is worth being clear that this app implements their method and
-not their premise.
+The idea is not new and it did not come from an app. On 14 April 1921 the Paris Dadaists
+held the first of what they called *excursions et visites* — a guided tour of the church
+of Saint-Julien-le-Pauvre, chosen for being nothing in particular. Their flyer says the
+point of it plainly, in Andrew Green's translation:
 
-What the method does do is genuinely useful: it breaks the habit of going where you already
-go. That does not need a physics claim behind it.
+> the Dadaists, wishing to correct the ineptitude of unreliable guides and cicerones,
+> have decided to undertake a series of visits to selected places, especially those that
+> don't really have a reason to exist.
+
+Their tour guide read entries chosen at random from the Larousse. Three years later
+Breton, Aragon, Morise and Vitrac took a train to Blois — **a town picked at random off a
+map** — and walked out into the countryside for several days, which is this app with a
+pin instead of a generator. The Situationists turned the same impulse into a procedure
+and called it the dérive; La Monte Young wrote the whole of *Composition 1960 #10* as
+"Draw a straight line and follow it", and Stanley Brouwn's entire 1962 piece reads "a
+walk from a to b".
+
+So this is a score generator, not an instrument. It writes you a one-line instruction of
+that same shape — *go to 35.88498, −82.81982* — and the walk is the work.
+
+Which is also why it does not dress up the answer. The 1921 excursion was a washout:
+rain, fifty-odd people, the promised band never arrived, the auction was cancelled and
+the onlookers drifted off. Everyone involved thought it a failure and it is now
+considered the first work of walking art. A hundred years of this practice already know
+the outing is usually a let-down, and say so. An app that promised you otherwise would be
+the only one in the line that did.
+
+The numbers here come from the phone's own generator. They are not quantum, nothing is
+fetched from a server, and no claim is made that an intention held while pressing the
+button reaches the arithmetic — that last part being the one thing this app declines to
+inherit from Randonautica, which is otherwise its direct ancestor.
+
+Declining it costs nothing, because the tradition already has a better account of the
+same experience. Breton called it *hasard objectif*: the coincidence that arrives looking
+preordained, "the true precipitate of desire". That is a claim about the person who finds
+the meaning, not about the machine that picked the number — and it survives knowing
+exactly how the number was picked, which the other claim does not.
 
 ## Permissions
 
@@ -50,7 +78,7 @@ One: `ACCESS_FINE_LOCATION`, to know where to scatter the points around. There i
 `INTERNET` permission, so nothing can leave the phone even by accident, and nothing about
 where you are or where you were sent is written down.
 
-## Where it came from
+## Ancestors in code
 
 Three earlier projects implement the same idea, and this one owes them the method:
 
