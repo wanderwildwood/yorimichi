@@ -17,6 +17,20 @@ already ships with.
 | ![Somewhere to go](screenshots/1-go.png) | ![A walk, and how much to trust it](screenshots/2-walk.png) |
 | ![Three settings](screenshots/3-settings.png) | ![What it does and does not claim](screenshots/4-about.png) |
 
+## Where this is up to
+
+Version 0.1.0, and honest about it: the maths is unit tested, every screen has been driven on
+an emulator, and the signed release has been installed and exercised — but **nobody has
+actually walked it yet.** Not once. It has never been outdoors.
+
+So the things still unknown are the ones only a walk can answer. How long the GPS takes to fix
+under trees. Whether an arrow that updates in five-degree steps is steady enough to follow on
+an E Ink panel, or whether it judders. Whether the line about how thick the scatter was reads
+as useful or as noise when you are standing in a field wondering why you came.
+
+It is public at this stage precisely because of that. If you take it out, what happened is the
+most useful thing you could send back.
+
 ## What it does
 
 - Scatters a thousand points evenly over the disc around you, estimates how thickly they
@@ -76,7 +90,8 @@ exactly how the number was picked, which the other claim does not.
 
 One: `ACCESS_FINE_LOCATION`, to know where to scatter the points around. There is no
 `INTERNET` permission, so nothing can leave the phone even by accident, and nothing about
-where you are or where you were sent is written down.
+where you are or where you were sent is written down. The details, and how to check them
+rather than take them on trust, are in [PRIVACY.md](PRIVACY.md).
 
 ## Ancestors in code
 
@@ -95,6 +110,21 @@ density estimate happen in metres rather than degrees, because a kernel that is 
 degrees is an ellipse on the ground; the Gaussian kernel is separated per axis, which is one
 exponential per cell per axis instead of one per pair; and the answer carries a measure of
 how concentrated it really was.
+
+## Contributing
+
+Issues and pull requests are welcome. The things that would help most, roughly in order:
+
+- **Reports from actual walks** — where, how far, whether the arrow was followable, whether
+  the fix was any good under cover.
+- **Other devices.** This is built for one phone's screen, 4.3" and monochrome. It should run
+  on any Android 12 or later, but it has never been seen on anything else.
+- **The honest-number problem.** `concentration` compares the local density to the disc's
+  average using the tenth nearest neighbour. That is a defensible choice rather than the only
+  one, and if you know a better statistic for "is this cluster actually anything", say so.
+
+Two things this app will not take, so nobody wastes an afternoon on them: a map drawn inside
+the app, and any claim that intention influences the numbers. The README says why for both.
 
 ## Licence
 
