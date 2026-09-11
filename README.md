@@ -126,12 +126,6 @@ Issues and pull requests are welcome. The things that would help most, roughly i
 Two things this app will not take, so nobody wastes an afternoon on them: a map drawn inside
 the app, and any claim that intention influences the numbers. The README says why for both.
 
-## Support
-
-This is free software and it stays free; there is nothing here to buy. If you would like to
-send something somewhere anyway, there are some llamas who go through a great deal of hay:
-<https://hotspringsllamas.org/donate/>
-
 ## Licence
 
 GNU General Public License v3.0 only. Copyright wander wildwood.
