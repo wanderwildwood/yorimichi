@@ -21,7 +21,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.mudita.mmd.components.text.TextMMD
 import com.mudita.mmd.components.top_app_bar.TopAppBarMMD
 import com.wanderwildwood.yorimichi.walk.Units
@@ -50,7 +49,7 @@ fun SettingsScreen(
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             TopAppBarMMD(
-                title = { TextMMD(text = "Settings", fontSize = 24.sp) },
+                title = { TextMMD(text = "Settings") },
                 navigationIcon = {
                     BarButton(Icons.Close, "Close", onClose)
                 },
@@ -101,8 +100,8 @@ private fun Setting(title: String, value: String, onClick: () -> Unit) {
             .clickable(onClick = onClick)
             .padding(vertical = 14.dp),
     ) {
-        TextMMD(text = title, fontSize = 18.sp)
-        TextMMD(text = value, fontSize = 14.sp)
+        TextMMD(text = title, style = MaterialTheme.typography.bodyMedium)
+        TextMMD(text = value, style = MaterialTheme.typography.labelSmall)
     }
 }
 
