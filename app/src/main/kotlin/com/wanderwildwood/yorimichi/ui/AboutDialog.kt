@@ -3,11 +3,11 @@ package com.wanderwildwood.yorimichi.ui
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.mudita.mmd.components.buttons.OutlinedButtonMMD
 import com.mudita.mmd.components.text.TextMMD
 import com.wanderwildwood.yorimichi.BuildConfig
@@ -36,7 +36,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
     EInkDialog(onDismiss = onDismiss) {
         TextMMD(
             text = "Detour ${BuildConfig.VERSION_NAME}",
-            fontSize = 20.sp,
+            style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
         )
 
@@ -44,22 +44,22 @@ fun AboutDialog(onDismiss: () -> Unit) {
         TextMMD(
             text = "Your position never leaves the phone, and the app cannot reach the " +
                 "network at all.",
-            fontSize = 14.sp,
+            style = MaterialTheme.typography.labelSmall,
         )
 
         Spacer(Modifier.height(14.dp))
         TextMMD(
             text = "The numbers come from the phone's own generator. They are not " +
                 "quantum, and nothing here has been shown to know anything.",
-            fontSize = 14.sp,
+            style = MaterialTheme.typography.labelSmall,
         )
 
         Spacer(Modifier.height(14.dp))
-        TextMMD(text = "GNU General Public License v3", fontSize = 14.sp)
-        TextMMD(text = "Icons from Material Symbols, Apache 2.0", fontSize = 14.sp)
+        TextMMD(text = "GNU General Public License v3", style = MaterialTheme.typography.labelSmall)
+        TextMMD(text = "Icons from Material Symbols, Apache 2.0", style = MaterialTheme.typography.labelSmall)
 
         Spacer(Modifier.height(14.dp))
-        TextMMD(text = "github.com/wanderwildwood/yorimichi", fontSize = 14.sp)
+        TextMMD(text = "github.com/wanderwildwood/yorimichi", style = MaterialTheme.typography.labelSmall)
 
         Spacer(Modifier.height(14.dp))
         Llama()
@@ -68,7 +68,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
         OutlinedButtonMMD(
             onClick = onDismiss,
             modifier = Modifier.fillMaxWidth().height(48.dp),
-        ) { TextMMD(text = "Close", fontSize = 15.sp) }
+        ) { TextMMD(text = "Close", style = MaterialTheme.typography.bodySmall) }
     }
 }
 
@@ -104,6 +104,6 @@ private fun Llama() {
             modifier = Modifier.size(22.dp),
         )
         Spacer(Modifier.width(6.dp))
-        TextMMD(text = "Feed the llamas", fontSize = 14.sp)
+        TextMMD(text = "Feed the llamas", style = MaterialTheme.typography.labelSmall)
     }
 }

@@ -60,7 +60,7 @@ fun WalkScreen(
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             TopAppBarMMD(
-                title = { TextMMD(text = "Detour", fontSize = 24.sp, fontWeight = FontWeight.Medium) },
+                title = { TextMMD(text = "Detour") },
                 actions = {
                     Box(
                         modifier = Modifier.size(48.dp).clickable(onClick = onSettings),
@@ -98,21 +98,21 @@ private fun ColumnScope.Asking(onAllow: () -> Unit) {
     Spacer(Modifier.weight(1f))
     TextMMD(
         text = "Detour needs to know where you are, to scatter its points around you.",
-        fontSize = 16.sp,
+        style = MaterialTheme.typography.titleSmall,
         textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(12.dp))
     TextMMD(
         text = "It is not stored and it is not sent anywhere. The app has no way to " +
             "reach the network.",
-        fontSize = 14.sp,
+        style = MaterialTheme.typography.labelSmall,
         textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(28.dp))
     ButtonMMD(
         onClick = onAllow,
         modifier = Modifier.fillMaxWidth().height(52.dp),
-    ) { TextMMD(text = "Allow", fontSize = 18.sp, fontWeight = FontWeight.Medium) }
+    ) { TextMMD(text = "Allow", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium) }
     Spacer(Modifier.weight(1.4f))
 }
 
@@ -123,14 +123,14 @@ private fun ColumnScope.Before(state: WalkState, onGo: () -> Unit) {
     val walk = radii(state.units).firstOrNull { it.metres == state.radiusMetres }
     TextMMD(
         text = "Within ${walk?.label ?: "${state.radiusMetres} m"}, ${where(state.look)}.",
-        fontSize = 16.sp,
+        style = MaterialTheme.typography.titleSmall,
         textAlign = TextAlign.Center,
     )
 
     Spacer(Modifier.height(10.dp))
     TextMMD(
         text = fixLine(state.fix, state.units),
-        fontSize = 14.sp,
+        style = MaterialTheme.typography.labelSmall,
         textAlign = TextAlign.Center,
     )
 
@@ -141,7 +141,7 @@ private fun ColumnScope.Before(state: WalkState, onGo: () -> Unit) {
         ButtonMMD(
             onClick = onGo,
             modifier = Modifier.fillMaxWidth().height(64.dp),
-        ) { TextMMD(text = "Go", fontSize = 22.sp, fontWeight = FontWeight.Medium) }
+        ) { TextMMD(text = "Go", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium) }
     }
 
     Spacer(Modifier.weight(1.4f))
@@ -177,16 +177,16 @@ private fun ColumnScope.After(
         } else {
             bearing(attractor.bearingDegrees)
         },
-        fontSize = 15.sp,
+        style = MaterialTheme.typography.bodySmall,
     )
 
     Spacer(Modifier.height(16.dp))
-    TextMMD(text = coordinate(attractor.point), fontSize = 15.sp)
+    TextMMD(text = coordinate(attractor.point), style = MaterialTheme.typography.bodySmall)
 
     Spacer(Modifier.height(10.dp))
     TextMMD(
         text = reading(attractor.concentration),
-        fontSize = 13.sp,
+        style = MaterialTheme.typography.labelSmall,
         textAlign = TextAlign.Center,
     )
 
@@ -200,13 +200,13 @@ private fun ColumnScope.After(
             OutlinedButtonMMD(
                 onClick = { onOpen(attractor.point) },
                 modifier = Modifier.fillMaxWidth().height(48.dp),
-            ) { TextMMD(text = "Open in maps", fontSize = 16.sp) }
+            ) { TextMMD(text = "Open in maps", style = MaterialTheme.typography.titleSmall) }
         }
 
         OutlinedButtonMMD(
             onClick = onAgain,
             modifier = Modifier.fillMaxWidth().height(48.dp),
-        ) { TextMMD(text = "Somewhere else", fontSize = 16.sp) }
+        ) { TextMMD(text = "Somewhere else", style = MaterialTheme.typography.titleSmall) }
     }
     Spacer(Modifier.height(4.dp))
 }
