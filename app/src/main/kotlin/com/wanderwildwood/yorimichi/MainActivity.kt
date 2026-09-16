@@ -19,13 +19,14 @@ import com.wanderwildwood.yorimichi.device.canOpenMap
 import com.wanderwildwood.yorimichi.device.openMap
 import com.wanderwildwood.yorimichi.ui.SettingsScreen
 import com.wanderwildwood.yorimichi.ui.WalkScreen
+import com.wanderwildwood.yorimichi.ui.monochrome
 import com.wanderwildwood.yorimichi.walk.WalkViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ThemeMMD {
+            ThemeMMD(colorScheme = monochrome) {
                 Detour()
             }
         }
