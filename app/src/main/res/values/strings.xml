@@ -33,6 +33,75 @@
     <string name="look_thin">where they thin out</string>
 
     <!-- ============================================================ -->
+    <!-- Walk screen: distances, the compass, and what is known about the fix.
+         Every %1$s below that stands for a number is given already written out, in
+         Western digits -->
+
+    <!-- Distances. %1$s is a whole number for feet and metres, and has one decimal
+         place for miles and kilometres, e.g. "0.6 mi" or "1.0 km" -->
+    <string name="distance_feet">%1$s ft</string>
+    <string name="distance_miles">%1$s mi</string>
+    <string name="distance_metres">%1$s m</string>
+    <string name="distance_kilometres">%1$s km</string>
+
+    <!-- The walks offered in settings, and shown in walk_within. Metric ones use
+         distance_metres and distance_kilometres above. Miles are spelled out here,
+         not abbreviated -->
+    <string name="radius_quarter_mile">¼ mile</string>
+    <string name="radius_half_mile">½ mile</string>
+    <!-- %1$s is 1, 3 or 5 -->
+    <plurals name="radius_miles">
+        <item quantity="one">%1$s mile</item>
+        <item quantity="other">%1$s miles</item>
+    </plurals>
+
+    <!-- The sixteen compass points, abbreviated, beside the arrow: N is north, NNE is
+         north-northeast, and so on round. Keep them as short as they are here -->
+    <string name="compass_n">N</string>
+    <string name="compass_nne">NNE</string>
+    <string name="compass_ne">NE</string>
+    <string name="compass_ene">ENE</string>
+    <string name="compass_e">E</string>
+    <string name="compass_ese">ESE</string>
+    <string name="compass_se">SE</string>
+    <string name="compass_sse">SSE</string>
+    <string name="compass_s">S</string>
+    <string name="compass_ssw">SSW</string>
+    <string name="compass_sw">SW</string>
+    <string name="compass_wsw">WSW</string>
+    <string name="compass_w">W</string>
+    <string name="compass_wnw">WNW</string>
+    <string name="compass_nw">NW</string>
+    <string name="compass_nnw">NNW</string>
+    <!-- The bearing beside the arrow, e.g. "NNE 32°". %1$s is a compass point from
+         above, %2$s the bearing in whole degrees, 0 to 359 -->
+    <string name="bearing">%1$s %2$s°</string>
+
+    <!-- Under the distance: how the random points fell where the walk was sent, compared
+         with an even spread of them. %1$s is how many times, with one decimal place,
+         always 2.0 or more -->
+    <string name="reading_thicker">The points fell %1$s times thicker here than an even scatter.</string>
+    <string name="reading_little_thicker">A little thicker here than an even scatter.</string>
+    <string name="reading_ordinary">No thicker here than chance usually gives.</string>
+    <string name="reading_little_thinner">A little thinner here than an even scatter.</string>
+    <string name="reading_thinner">The points fell %1$s times thinner here than an even scatter.</string>
+
+    <!-- Before a walk: what the phone knows about its own position (a "fix", from GPS) -->
+    <string name="fix_waiting">Waiting for a fix</string>
+    <!-- %1$s is an age from the age_ strings below, e.g. "20 min" -->
+    <string name="fix_stale">Last fix %1$s ago</string>
+    <string name="fix_unknown_accuracy">Fix of unknown accuracy</string>
+    <!-- %1$s is a distance from the distance_ strings above, e.g. "10 m" -->
+    <string name="fix_good_to">Fix good to %1$s</string>
+    <!-- How old the fix is. "min" is minutes and "hr" is hours, abbreviated -->
+    <string name="age_minutes">%1$s min</string>
+    <string name="age_hours">%1$s hr</string>
+    <plurals name="age_days">
+        <item quantity="one">%1$s day</item>
+        <item quantity="other">%1$s days</item>
+    </plurals>
+
+    <!-- ============================================================ -->
     <!-- Settings screen -->
 
     <string name="settings_title">Settings</string>

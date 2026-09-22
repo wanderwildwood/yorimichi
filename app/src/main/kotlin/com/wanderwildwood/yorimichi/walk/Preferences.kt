@@ -9,7 +9,19 @@ enum class Look { GATHER, THIN }
 enum class Units { IMPERIAL, METRIC }
 
 /** How far a walk may be, and how that distance is said. */
-data class Radius(val metres: Int, val label: String)
+data class Radius(val metres: Int, val label: RadiusLabel)
+
+/**
+ * A walk's distance as it is offered: a round number in its own units, or one of the
+ * two fractions of a mile that have words of their own. The screen puts the words to it.
+ */
+sealed interface RadiusLabel {
+    data class Metres(val metres: Int) : RadiusLabel
+    data class Kilometres(val kilometres: Int) : RadiusLabel
+    data class Miles(val miles: Int) : RadiusLabel
+    data object QuarterMile : RadiusLabel
+    data object HalfMile : RadiusLabel
+}
 
 /**
  * The five walks on offer.
@@ -21,19 +33,19 @@ data class Radius(val metres: Int, val label: String)
  */
 fun radii(units: Units): List<Radius> = when (units) {
     Units.METRIC -> listOf(
-        Radius(500, "500 m"),
-        Radius(1_000, "1 km"),
-        Radius(2_000, "2 km"),
-        Radius(5_000, "5 km"),
-        Radius(10_000, "10 km"),
+        Radius(500, RadiusLabel.Metres(500)),
+        Radius(1_000, RadiusLabel.Kilometres(1)),
+        Radius(2_000, RadiusLabel.Kilometres(2)),
+        Radius(5_000, RadiusLabel.Kilometres(5)),
+        Radius(10_000, RadiusLabel.Kilometres(10)),
     )
 
     Units.IMPERIAL -> listOf(
-        Radius(402, "\u00bc mile"),
-        Radius(805, "\u00bd mile"),
-        Radius(1_609, "1 mile"),
-        Radius(4_828, "3 miles"),
-        Radius(8_047, "5 miles"),
+        Radius(402, RadiusLabel.QuarterMile),
+        Radius(805, RadiusLabel.HalfMile),
+        Radius(1_609, RadiusLabel.Miles(1)),
+        Radius(4_828, RadiusLabel.Miles(3)),
+        Radius(8_047, RadiusLabel.Miles(5)),
     )
 }
 

@@ -30,6 +30,7 @@ import com.mudita.mmd.components.top_app_bar.TopAppBarMMD
 import com.wanderwildwood.yorimichi.R
 import com.wanderwildwood.yorimichi.core.Coord
 import com.wanderwildwood.yorimichi.walk.Look
+import com.wanderwildwood.yorimichi.walk.RadiusLabel
 import com.wanderwildwood.yorimichi.walk.WalkState
 import com.wanderwildwood.yorimichi.walk.bearing
 import com.wanderwildwood.yorimichi.walk.coordinate
@@ -123,14 +124,14 @@ private fun ColumnScope.Before(state: WalkState, onGo: () -> Unit) {
 
     val walk = radii(state.units).firstOrNull { it.metres == state.radiusMetres }
     TextMMD(
-        text = stringResource(R.string.walk_within, walk?.label ?: "${state.radiusMetres} m", where(state.look)),
+        text = stringResource(R.string.walk_within, said(walk?.label ?: RadiusLabel.Metres(state.radiusMetres)), where(state.look)),
         style = MaterialTheme.typography.titleSmall,
         textAlign = TextAlign.Center,
     )
 
     Spacer(Modifier.height(10.dp))
     TextMMD(
-        text = fixLine(state.fix, state.units),
+        text = said(fixLine(state.fix, state.units)),
         style = MaterialTheme.typography.labelSmall,
         textAlign = TextAlign.Center,
     )
@@ -166,7 +167,7 @@ private fun ColumnScope.After(
 
     Spacer(Modifier.height(14.dp))
     TextMMD(
-        text = distance(attractor.distanceMetres, state.units),
+        text = said(distance(attractor.distanceMetres, state.units)),
         fontSize = 44.sp,
         fontWeight = FontWeight.Medium,
     )
@@ -174,9 +175,9 @@ private fun ColumnScope.After(
         text = if (state.heading == null) {
             // Said out loud, because with no compass the ring is drawn north-up and the
             // reader has to do the turning themselves.
-            stringResource(R.string.walk_bearing_no_compass, bearing(attractor.bearingDegrees))
+            stringResource(R.string.walk_bearing_no_compass, said(bearing(attractor.bearingDegrees)))
         } else {
-            bearing(attractor.bearingDegrees)
+            said(bearing(attractor.bearingDegrees))
         },
         style = MaterialTheme.typography.bodySmall,
     )
@@ -186,7 +187,7 @@ private fun ColumnScope.After(
 
     Spacer(Modifier.height(10.dp))
     TextMMD(
-        text = reading(attractor.concentration),
+        text = said(reading(attractor.concentration)),
         style = MaterialTheme.typography.labelSmall,
         textAlign = TextAlign.Center,
     )

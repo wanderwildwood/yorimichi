@@ -1,6 +1,9 @@
 package com.wanderwildwood.yorimichi.walk
 
+import androidx.annotation.StringRes
+import com.wanderwildwood.yorimichi.R
 import com.wanderwildwood.yorimichi.core.Coord
+import com.wanderwildwood.yorimichi.device.Fix
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -8,40 +11,65 @@ private const val METRES_PER_MILE = 1_609.344
 private const val METRES_PER_FOOT = 0.3048
 
 /**
- * How far it is, said the way it would be said out loud.
+ * A distance in the units it is said in, rounded to what is worth saying. The screen
+ * puts the words to it.
+ *
+ * Short distances are whole tens of feet or metres. Long ones are carried as they are
+ * and said to one decimal place, by [oneDecimal].
+ */
+sealed interface Distance {
+    data class Feet(val feet: Int) : Distance
+    data class Miles(val miles: Double) : Distance
+    data class Metres(val metres: Int) : Distance
+    data class Kilometres(val kilometres: Double) : Distance
+}
+
+/**
+ * How far it is, in the units it would be said in out loud.
  *
  * Rounded hard on purpose. The fix under this is good to a few metres on a clear day
  * and worse under trees, and the point itself is an arbitrary cell of a grid, so a
  * distance printed to the metre would be claiming a precision that nothing in the chain
  * has.
  */
-fun distance(metres: Double, units: Units): String = when (units) {
+fun distance(metres: Double, units: Units): Distance = when (units) {
     Units.IMPERIAL -> {
         val feet = metres / METRES_PER_FOOT
-        if (feet < 1_000) "${(feet / 10).roundToInt() * 10} ft"
-        else String.format(Locale.US, "%.1f mi", metres / METRES_PER_MILE)
+        if (feet < 1_000) Distance.Feet((feet / 10).roundToInt() * 10)
+        else Distance.Miles(metres / METRES_PER_MILE)
     }
 
     Units.METRIC -> {
-        if (metres < 1_000) "${(metres / 10).roundToInt() * 10} m"
-        else String.format(Locale.US, "%.1f km", metres / 1_000)
+        if (metres < 1_000) Distance.Metres((metres / 10).roundToInt() * 10)
+        else Distance.Kilometres(metres / 1_000)
     }
 }
 
-private val POINTS = listOf(
-    "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
-    "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW",
-)
+/**
+ * One decimal place, in Western digits whatever language the phone is in. Every number
+ * on the screen has always been written this way, and changing that is its own decision.
+ */
+fun oneDecimal(value: Double): String = String.format(Locale.US, "%.1f", value)
 
-/** The sixteen-point compass name for a bearing. */
-fun cardinal(degrees: Double): String {
-    val normalised = ((degrees % 360.0) + 360.0) % 360.0
-    return POINTS[(normalised / 22.5).roundToInt() % 16]
+/** The sixteen points of the compass, clockwise from north, and the word for each. */
+enum class CompassPoint(@StringRes val labelRes: Int) {
+    N(R.string.compass_n), NNE(R.string.compass_nne), NE(R.string.compass_ne), ENE(R.string.compass_ene),
+    E(R.string.compass_e), ESE(R.string.compass_ese), SE(R.string.compass_se), SSE(R.string.compass_sse),
+    S(R.string.compass_s), SSW(R.string.compass_ssw), SW(R.string.compass_sw), WSW(R.string.compass_wsw),
+    W(R.string.compass_w), WNW(R.string.compass_wnw), NW(R.string.compass_nw), NNW(R.string.compass_nnw),
 }
 
-/** A bearing as it is written next to the arrow: "NNE 32°". */
-fun bearing(degrees: Double): String =
-    "${cardinal(degrees)} ${degrees.roundToInt() % 360}°"
+/** The sixteen-point compass point for a bearing. */
+fun cardinal(degrees: Double): CompassPoint {
+    val normalised = ((degrees % 360.0) + 360.0) % 360.0
+    return CompassPoint.entries[(normalised / 22.5).roundToInt() % 16]
+}
+
+/** A bearing as it is written next to the arrow, a point and whole degrees: "NNE 32°". */
+data class Bearing(val point: CompassPoint, val degrees: Int)
+
+fun bearing(degrees: Double): Bearing =
+    Bearing(cardinal(degrees), degrees.roundToInt() % 360)
 
 /**
  * Five decimal places is a bit over a metre, which is finer than the fix that produced
@@ -51,45 +79,69 @@ fun bearing(degrees: Double): String =
 fun coordinate(coord: Coord): String =
     String.format(Locale.US, "%.5f, %.5f", coord.lat, coord.lon)
 
+/** What the scatter did, as one of five things to say about it. */
+sealed interface Reading {
+    /** At least twice an even scatter, and how many times. */
+    data class Thicker(val times: Double) : Reading
+    data object LittleThicker : Reading
+    data object Ordinary : Reading
+    data object LittleThinner : Reading
+
+    /** Well under half an even scatter, and how many times thinner. */
+    data class Thinner(val times: Double) : Reading
+}
+
 /**
- * What the scatter actually did, in a sentence.
+ * What the scatter actually did.
  *
  * The app will always find a thickest cell, and most of the time that cell is nothing
  * much. Saying so is the whole point of measuring it: an app that reports every run as
  * a discovery is not reporting anything.
  */
-fun reading(concentration: Double): String = when {
-    concentration >= 2.0 ->
-        "The points fell ${times(concentration)} times thicker here than an even scatter."
-
-    concentration >= 1.3 -> "A little thicker here than an even scatter."
-    concentration > 0.75 -> "No thicker here than chance usually gives."
-    concentration > 0.4 -> "A little thinner here than an even scatter."
-    else ->
-        "The points fell ${times(1.0 / concentration)} times thinner here than an even scatter."
+fun reading(concentration: Double): Reading = when {
+    concentration >= 2.0 -> Reading.Thicker(concentration)
+    concentration >= 1.3 -> Reading.LittleThicker
+    concentration > 0.75 -> Reading.Ordinary
+    concentration > 0.4 -> Reading.LittleThinner
+    else -> Reading.Thinner(1.0 / concentration)
 }
 
-private fun times(value: Double): String = String.format(Locale.US, "%.1f", value)
+/** The line under the walk that says what the phone knows about where it is. */
+sealed interface FixLine {
+    data object Waiting : FixLine
+
+    /** Old enough that its age is the thing worth saying. */
+    data class Stale(val age: Age) : FixLine
+    data object UnknownAccuracy : FixLine
+    data class GoodTo(val accuracy: Distance) : FixLine
+}
 
 /**
- * What the phone knows about where it is, said plainly.
+ * What the phone knows about where it is.
  *
  * A fix is not a fact, and this line is where the app says so: how well it is known,
  * and how old it is when that matters. Scattering a walk around a position the phone
  * held twenty minutes ago is the failure this exists to make visible.
  */
-fun fixLine(fix: com.wanderwildwood.yorimichi.device.Fix?, units: Units): String = when {
-    fix == null -> "Waiting for a fix"
-    fix.ageMillis > 120_000 -> "Last fix ${age(fix.ageMillis)} ago"
-    fix.accuracyMetres == Float.MAX_VALUE -> "Fix of unknown accuracy"
-    else -> "Fix good to ${distance(fix.accuracyMetres.toDouble(), units)}"
+fun fixLine(fix: Fix?, units: Units): FixLine = when {
+    fix == null -> FixLine.Waiting
+    fix.ageMillis > 120_000 -> FixLine.Stale(age(fix.ageMillis))
+    fix.accuracyMetres == Float.MAX_VALUE -> FixLine.UnknownAccuracy
+    else -> FixLine.GoodTo(distance(fix.accuracyMetres.toDouble(), units))
 }
 
-private fun age(millis: Long): String {
+/** How old something is, in the largest whole unit that is not zero. */
+sealed interface Age {
+    data class Minutes(val minutes: Long) : Age
+    data class Hours(val hours: Long) : Age
+    data class Days(val days: Long) : Age
+}
+
+fun age(millis: Long): Age {
     val minutes = millis / 60_000
     return when {
-        minutes < 60 -> "$minutes min"
-        minutes < 1_440 -> "${minutes / 60} hr"
-        else -> "${minutes / 1_440} days"
+        minutes < 60 -> Age.Minutes(minutes)
+        minutes < 1_440 -> Age.Hours(minutes / 60)
+        else -> Age.Days(minutes / 1_440)
     }
 }
