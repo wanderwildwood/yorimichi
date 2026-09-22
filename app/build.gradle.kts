@@ -15,8 +15,8 @@ android {
         // The Kompakt runs Android 12 (API 31); nothing here needs anything newer.
         minSdk = 31
         targetSdk = 31
-        versionCode = 2
-        versionName = "0.1.1"
+        versionCode = 3
+        versionName = "0.1.2"
     }
 
     // A real keystore in signing/ signs every build type when it is present, so the
@@ -51,6 +51,15 @@ android {
                 "proguard-rules.pro"
             )
             realSigningConfig?.let { signingConfig = it }
+
+            // AGP stamps the git revision into META-INF. The build box works from an rsync
+            // with no .git and writes NO_SUPPORTED_VCS_FOUND there, while a CI runner writes
+            // the real commit -- so with this on, the same version built in the two places
+            // has different contents, and the published APK names a commit of his working
+            // copy. Off, so neither happens.
+            vcsInfo {
+                include = false
+            }
         }
     }
 
