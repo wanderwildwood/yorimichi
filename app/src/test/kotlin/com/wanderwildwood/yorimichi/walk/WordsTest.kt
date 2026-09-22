@@ -10,29 +10,31 @@ class WordsTest {
 
     @Test
     fun `short walks are said in feet and long ones in miles`() {
-        assertEquals("300 ft", distance(91.44, Units.IMPERIAL))
-        assertEquals("0.6 mi", distance(1_000.0, Units.IMPERIAL))
+        assertEquals(Distance.Feet(300), distance(91.44, Units.IMPERIAL))
+        val long = distance(1_000.0, Units.IMPERIAL) as Distance.Miles
+        assertEquals("0.6", oneDecimal(long.miles))
     }
 
     @Test
     fun `short walks are said in metres and long ones in kilometres`() {
-        assertEquals("90 m", distance(91.44, Units.METRIC))
-        assertEquals("1.0 km", distance(1_000.0, Units.METRIC))
+        assertEquals(Distance.Metres(90), distance(91.44, Units.METRIC))
+        val long = distance(1_000.0, Units.METRIC) as Distance.Kilometres
+        assertEquals("1.0", oneDecimal(long.kilometres))
     }
 
     @Test
     fun `the compass has sixteen points and wraps`() {
-        assertEquals("N", cardinal(0.0))
-        assertEquals("NNE", cardinal(22.5))
-        assertEquals("E", cardinal(90.0))
-        assertEquals("NW", cardinal(315.0))
-        assertEquals("N", cardinal(359.0))
-        assertEquals("N", cardinal(360.0))
+        assertEquals(CompassPoint.N, cardinal(0.0))
+        assertEquals(CompassPoint.NNE, cardinal(22.5))
+        assertEquals(CompassPoint.E, cardinal(90.0))
+        assertEquals(CompassPoint.NW, cardinal(315.0))
+        assertEquals(CompassPoint.N, cardinal(359.0))
+        assertEquals(CompassPoint.N, cardinal(360.0))
     }
 
     @Test
     fun `a bearing reads as a name and a number`() {
-        assertEquals("NNE 32°", bearing(32.0))
+        assertEquals(Bearing(CompassPoint.NNE, 32), bearing(32.0))
     }
 
     @Test
@@ -42,30 +44,26 @@ class WordsTest {
 
     @Test
     fun `an ordinary cluster is called ordinary`() {
-        assertEquals("No thicker here than chance usually gives.", reading(1.0))
+        assertEquals(Reading.Ordinary, reading(1.0))
     }
 
     @Test
     fun `a real cluster gets its number said`() {
-        assertEquals(
-            "The points fell 3.0 times thicker here than an even scatter.",
-            reading(3.0),
-        )
+        val thick = reading(3.0) as Reading.Thicker
+        assertEquals("3.0", oneDecimal(thick.times))
     }
 
     @Test
     fun `a thin patch is described as thin`() {
-        assertEquals(
-            "The points fell 5.0 times thinner here than an even scatter.",
-            reading(0.2),
-        )
+        val thin = reading(0.2) as Reading.Thinner
+        assertEquals("5.0", oneDecimal(thin.times))
     }
 
     @Test
     fun `the fix line says what is known about the fix`() {
-        assertEquals("Waiting for a fix", fixLine(null, Units.METRIC))
+        assertEquals(FixLine.Waiting, fixLine(null, Units.METRIC))
         assertEquals(
-            "Fix good to 10 m",
+            FixLine.GoodTo(Distance.Metres(10)),
             fixLine(Fix(Coord(0.0, 0.0), 8f, 0), Units.METRIC),
         )
     }
@@ -73,7 +71,7 @@ class WordsTest {
     @Test
     fun `an old fix says how old`() {
         assertEquals(
-            "Last fix 20 min ago",
+            FixLine.Stale(Age.Minutes(20)),
             fixLine(Fix(Coord(0.0, 0.0), 5f, 20 * 60_000), Units.METRIC),
         )
     }

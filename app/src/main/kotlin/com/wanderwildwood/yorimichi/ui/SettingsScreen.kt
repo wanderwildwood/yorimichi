@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.mudita.mmd.components.text.TextMMD
 import com.mudita.mmd.components.top_app_bar.TopAppBarMMD
 import com.wanderwildwood.yorimichi.R
+import com.wanderwildwood.yorimichi.walk.RadiusLabel
 import com.wanderwildwood.yorimichi.walk.Units
 import com.wanderwildwood.yorimichi.walk.WalkState
 import com.wanderwildwood.yorimichi.walk.radii
@@ -72,7 +73,7 @@ fun SettingsScreen(
             val walk = radii(state.units).firstOrNull { it.metres == state.radiusMetres }
             Setting(
                 title = stringResource(R.string.settings_radius),
-                value = walk?.label ?: "${state.radiusMetres} m",
+                value = said(walk?.label ?: RadiusLabel.Metres(state.radiusMetres)),
                 onClick = onRadius,
             )
             Setting(
