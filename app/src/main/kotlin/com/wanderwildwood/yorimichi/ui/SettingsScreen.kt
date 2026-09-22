@@ -20,9 +20,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mudita.mmd.components.text.TextMMD
 import com.mudita.mmd.components.top_app_bar.TopAppBarMMD
+import com.wanderwildwood.yorimichi.R
 import com.wanderwildwood.yorimichi.walk.Units
 import com.wanderwildwood.yorimichi.walk.WalkState
 import com.wanderwildwood.yorimichi.walk.radii
@@ -49,12 +51,12 @@ fun SettingsScreen(
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             TopAppBarMMD(
-                title = { TextMMD(text = "Settings") },
+                title = { TextMMD(text = stringResource(R.string.settings_title)) },
                 navigationIcon = {
-                    BarButton(Icons.Close, "Close", onClose)
+                    BarButton(Icons.Close, stringResource(R.string.settings_cd_close), onClose)
                 },
                 actions = {
-                    BarButton(Icons.Info, "About", { aboutOpen = true })
+                    BarButton(Icons.Info, stringResource(R.string.settings_cd_about), { aboutOpen = true })
                 },
             )
         },
@@ -69,20 +71,20 @@ fun SettingsScreen(
 
             val walk = radii(state.units).firstOrNull { it.metres == state.radiusMetres }
             Setting(
-                title = "How far it may send you",
+                title = stringResource(R.string.settings_radius),
                 value = walk?.label ?: "${state.radiusMetres} m",
                 onClick = onRadius,
             )
             Setting(
-                title = "Look for",
+                title = stringResource(R.string.settings_look_for),
                 value = where(state.look).replaceFirstChar { it.uppercase() },
                 onClick = onLook,
             )
             Setting(
-                title = "Distances",
+                title = stringResource(R.string.settings_distances),
                 value = when (state.units) {
-                    Units.IMPERIAL -> "Miles and feet"
-                    Units.METRIC -> "Kilometres and metres"
+                    Units.IMPERIAL -> stringResource(R.string.settings_units_imperial)
+                    Units.METRIC -> stringResource(R.string.settings_units_metric)
                 },
                 onClick = onUnits,
             )
