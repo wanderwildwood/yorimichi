@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ import com.mudita.mmd.components.buttons.ButtonMMD
 import com.mudita.mmd.components.buttons.OutlinedButtonMMD
 import com.mudita.mmd.components.text.TextMMD
 import com.mudita.mmd.components.top_app_bar.TopAppBarMMD
+import com.wanderwildwood.yorimichi.R
 import com.wanderwildwood.yorimichi.core.Coord
 import com.wanderwildwood.yorimichi.walk.Look
 import com.wanderwildwood.yorimichi.walk.WalkState
@@ -60,7 +62,7 @@ fun WalkScreen(
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             TopAppBarMMD(
-                title = { TextMMD(text = "Detour") },
+                title = { TextMMD(text = stringResource(R.string.walk_title)) },
                 actions = {
                     Box(
                         modifier = Modifier.size(48.dp).clickable(onClick = onSettings),
@@ -68,7 +70,7 @@ fun WalkScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Settings,
-                            contentDescription = "Settings",
+                            contentDescription = stringResource(R.string.walk_cd_settings),
                             tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(22.dp),
                         )
@@ -97,14 +99,13 @@ fun WalkScreen(
 private fun ColumnScope.Asking(onAllow: () -> Unit) {
     Spacer(Modifier.weight(1f))
     TextMMD(
-        text = "Detour needs to know where you are, to scatter its points around you.",
+        text = stringResource(R.string.walk_asking_why),
         style = MaterialTheme.typography.titleSmall,
         textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(12.dp))
     TextMMD(
-        text = "It is not stored and it is not sent anywhere. The app has no way to " +
-            "reach the network.",
+        text = stringResource(R.string.walk_asking_privacy),
         style = MaterialTheme.typography.labelSmall,
         textAlign = TextAlign.Center,
     )
@@ -112,7 +113,7 @@ private fun ColumnScope.Asking(onAllow: () -> Unit) {
     ButtonMMD(
         onClick = onAllow,
         modifier = Modifier.fillMaxWidth().height(52.dp),
-    ) { TextMMD(text = "Allow", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium) }
+    ) { TextMMD(text = stringResource(R.string.walk_allow), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium) }
     Spacer(Modifier.weight(1.4f))
 }
 
@@ -122,7 +123,7 @@ private fun ColumnScope.Before(state: WalkState, onGo: () -> Unit) {
 
     val walk = radii(state.units).firstOrNull { it.metres == state.radiusMetres }
     TextMMD(
-        text = "Within ${walk?.label ?: "${state.radiusMetres} m"}, ${where(state.look)}.",
+        text = stringResource(R.string.walk_within, walk?.label ?: "${state.radiusMetres} m", where(state.look)),
         style = MaterialTheme.typography.titleSmall,
         textAlign = TextAlign.Center,
     )
@@ -141,7 +142,7 @@ private fun ColumnScope.Before(state: WalkState, onGo: () -> Unit) {
         ButtonMMD(
             onClick = onGo,
             modifier = Modifier.fillMaxWidth().height(64.dp),
-        ) { TextMMD(text = "Go", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium) }
+        ) { TextMMD(text = stringResource(R.string.walk_go), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium) }
     }
 
     Spacer(Modifier.weight(1.4f))
@@ -173,7 +174,7 @@ private fun ColumnScope.After(
         text = if (state.heading == null) {
             // Said out loud, because with no compass the ring is drawn north-up and the
             // reader has to do the turning themselves.
-            "${bearing(attractor.bearingDegrees)} — no compass on this phone"
+            stringResource(R.string.walk_bearing_no_compass, bearing(attractor.bearingDegrees))
         } else {
             bearing(attractor.bearingDegrees)
         },
@@ -200,19 +201,20 @@ private fun ColumnScope.After(
             OutlinedButtonMMD(
                 onClick = { onOpen(attractor.point) },
                 modifier = Modifier.fillMaxWidth().height(48.dp),
-            ) { TextMMD(text = "Open in maps", style = MaterialTheme.typography.titleSmall) }
+            ) { TextMMD(text = stringResource(R.string.walk_open_in_maps), style = MaterialTheme.typography.titleSmall) }
         }
 
         OutlinedButtonMMD(
             onClick = onAgain,
             modifier = Modifier.fillMaxWidth().height(48.dp),
-        ) { TextMMD(text = "Somewhere else", style = MaterialTheme.typography.titleSmall) }
+        ) { TextMMD(text = stringResource(R.string.walk_somewhere_else), style = MaterialTheme.typography.titleSmall) }
     }
     Spacer(Modifier.height(4.dp))
 }
 
 /** How the two ends of the scatter are said in a sentence. */
+@Composable
 fun where(look: Look): String = when (look) {
-    Look.GATHER -> "where the points gather"
-    Look.THIN -> "where they thin out"
+    Look.GATHER -> stringResource(R.string.look_gather)
+    Look.THIN -> stringResource(R.string.look_thin)
 }

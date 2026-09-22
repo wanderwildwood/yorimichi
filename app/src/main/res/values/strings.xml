@@ -1,4 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Detour</string>
+
+    <!-- ============================================================ -->
+    <!-- Walk screen: the one main screen -->
+
+    <!-- Top bar title: the app's name -->
+    <string name="walk_title">Detour</string>
+    <!-- Cog button in the top bar, read aloud by a screen reader -->
+    <string name="walk_cd_settings">Settings</string>
+
+    <!-- Before the location permission is granted -->
+    <string name="walk_asking_why">Detour needs to know where you are, to scatter its points around you.</string>
+    <string name="walk_asking_privacy">It is not stored and it is not sent anywhere. The app has no way to reach the network.</string>
+    <!-- Button that asks for the location permission (verb) -->
+    <string name="walk_allow">Allow</string>
+
+    <!-- Before a walk. %1$s is the radius, e.g. "2 km" or "1 mile"; %2$s is one of the look_ phrases below -->
+    <string name="walk_within">Within %1$s, %2$s.</string>
+    <!-- The big button that picks a point to walk to (verb) -->
+    <string name="walk_go">Go</string>
+
+    <!-- After a walk is picked. %1$s is a compass bearing, e.g. "NNE 32°"; shown when the phone has no compass -->
+    <string name="walk_bearing_no_compass">%1$s — no compass on this phone</string>
+    <!-- Button that hands the point to a map app -->
+    <string name="walk_open_in_maps">Open in maps</string>
+    <!-- Button that picks a new point instead of this one -->
+    <string name="walk_somewhere_else">Somewhere else</string>
+
+    <!-- Which end of the random scatter to walk to. Lower case: they are used mid-sentence after walk_within, and capitalised by the app for the settings row -->
+    <string name="look_gather">where the points gather</string>
+    <string name="look_thin">where they thin out</string>
+
+    <!-- ============================================================ -->
+    <!-- Settings screen -->
+
+    <string name="settings_title">Settings</string>
+    <!-- Top bar buttons, read aloud by a screen reader -->
+    <string name="settings_cd_close">Close</string>
+    <string name="settings_cd_about">About</string>
+    <!-- Setting row: the walk radius -->
+    <string name="settings_radius">How far it may send you</string>
+    <!-- Setting row: which end of the scatter to walk to -->
+    <string name="settings_look_for">Look for</string>
+    <!-- Setting row: the units distances are shown in, and its two values -->
+    <string name="settings_distances">Distances</string>
+    <string name="settings_units_imperial">Miles and feet</string>
+    <string name="settings_units_metric">Kilometres and metres</string>
+
+    <!-- ============================================================ -->
+    <!-- About dialog. Keep the names of the app, projects and licences as they are -->
+
+    <!-- Heading. %1$s is the version number, e.g. 0.1.0 -->
+    <string name="about_title">Detour %1$s</string>
+    <string name="about_privacy">Your position never leaves the phone, and the app cannot reach the network at all.</string>
+    <string name="about_randomness">The numbers come from the phone\'s own generator. They are not quantum, and nothing here has been shown to know anything.</string>
+    <!-- The name of the app's licence -->
+    <string name="about_licence">GNU General Public License v3</string>
+    <string name="about_icons">Icons from Material Symbols, Apache 2.0</string>
+    <!-- The donation link label, beside a drawing of a llama. A fixed phrase: a verb and an object, so the reader knows what pressing it does -->
+    <string name="about_feed_the_llamas">Feed the llamas</string>
+    <!-- Button that closes the About dialog -->
+    <string name="about_close">Close</string>
 </resources>
