@@ -58,7 +58,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
         TextMMD(text = stringResource(R.string.about_icons), style = MaterialTheme.typography.labelSmall)
 
         Spacer(Modifier.height(14.dp))
-        TextMMD(text = "github.com/wanderwildwood/yorimichi", style = MaterialTheme.typography.labelSmall)
+        TextMMD(text = "wanderthe.dev", style = MaterialTheme.typography.labelSmall)
 
         Spacer(Modifier.height(14.dp))
         Llama()
