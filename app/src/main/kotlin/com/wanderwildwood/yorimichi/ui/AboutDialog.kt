@@ -58,9 +58,6 @@ fun AboutDialog(onDismiss: () -> Unit) {
         TextMMD(text = stringResource(R.string.about_icons), style = MaterialTheme.typography.labelSmall)
 
         Spacer(Modifier.height(14.dp))
-        TextMMD(text = "wanderthe.dev", style = MaterialTheme.typography.labelSmall)
-
-        Spacer(Modifier.height(14.dp))
         Llama()
 
         Spacer(Modifier.height(18.dp))
@@ -73,6 +70,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
 
 /**
  * A llama at the foot of the About, which opens the page a donation goes to.
+ * The site's address sits at the start of the same line, and only the llama and its words open it.
  *
  * Three words rather than an address: a verb and an object, so what happens when you press
  * them is not a surprise even though the page is not named. The drawing is his own, and it is
@@ -86,23 +84,29 @@ private fun Llama() {
     val context = LocalContext.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                runCatching {
-                    context.startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse("https://hotspringsllamas.org/donate/")),
-                    )
-                }
-            }
-            .padding(vertical = 4.dp),
+        modifier = Modifier.fillMaxWidth(),
     ) {
-        Image(
-            painter = painterResource(R.drawable.llama),
-            contentDescription = null,
-            modifier = Modifier.size(22.dp),
-        )
-        Spacer(Modifier.width(6.dp))
-        TextMMD(text = stringResource(R.string.about_feed_the_llamas), style = MaterialTheme.typography.labelSmall)
+        TextMMD(text = "wanderthe.dev", style = MaterialTheme.typography.labelSmall)
+        Spacer(Modifier.width(12.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clickable {
+                    runCatching {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://square.link/u/AGu8oT10")),
+                        )
+                    }
+                }
+                .padding(vertical = 4.dp),
+        ) {
+            Image(
+                painter = painterResource(R.drawable.llama),
+                contentDescription = null,
+                modifier = Modifier.size(22.dp),
+            )
+            Spacer(Modifier.width(6.dp))
+            TextMMD(text = stringResource(R.string.about_feed_the_llamas), style = MaterialTheme.typography.labelSmall)
+        }
     }
 }
