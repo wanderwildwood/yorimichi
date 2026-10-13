@@ -3,6 +3,7 @@ package com.wanderwildwood.yorimichi.walk
 import androidx.annotation.StringRes
 import com.wanderwildwood.yorimichi.R
 import com.wanderwildwood.yorimichi.core.Coord
+import com.wanderwildwood.yorimichi.device.FRESH_MILLIS
 import com.wanderwildwood.yorimichi.device.Fix
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -108,7 +109,14 @@ fun reading(concentration: Double): Reading = when {
 
 /** The line under the walk that says what the phone knows about where it is. */
 sealed interface FixLine {
-    data object Waiting : FixLine
+    /** No position at all yet, and the GPS is listening. */
+    data object Searching : FixLine
+
+    /** No position at all after [GIVE_UP_MILLIS] of listening: time to say so. */
+    data object NotFound : FixLine
+
+    /** No position at all, and location is switched off for the whole phone. */
+    data object Off : FixLine
 
     /** Old enough that its age is the thing worth saying. */
     data class Stale(val age: Age) : FixLine
@@ -117,15 +125,32 @@ sealed interface FixLine {
 }
 
 /**
+ * How long the GPS listens before the screen stops saying it is looking and starts
+ * saying it has not found one. A cold start under open sky takes well under a minute;
+ * two is long enough that the reader is probably under a roof.
+ */
+const val GIVE_UP_MILLIS = 120_000L
+
+/**
  * What the phone knows about where it is.
  *
  * A fix is not a fact, and this line is where the app says so: how well it is known,
  * and how old it is when that matters. Scattering a walk around a position the phone
- * held twenty minutes ago is the failure this exists to make visible.
+ * held twenty minutes ago is fine, so long as the screen says that is what it is doing.
+ *
+ * [searchedMillis] is how long the GPS has been listening with location switched on.
  */
-fun fixLine(fix: Fix?, units: Units): FixLine = when {
-    fix == null -> FixLine.Waiting
-    fix.ageMillis > 120_000 -> FixLine.Stale(age(fix.ageMillis))
+fun fixLine(
+    fix: Fix?,
+    units: Units,
+    now: Long,
+    locationOn: Boolean = true,
+    searchedMillis: Long = 0,
+): FixLine = when {
+    fix == null && !locationOn -> FixLine.Off
+    fix == null && searchedMillis >= GIVE_UP_MILLIS -> FixLine.NotFound
+    fix == null -> FixLine.Searching
+    fix.ageMillis(now) > FRESH_MILLIS -> FixLine.Stale(age(fix.ageMillis(now)))
     fix.accuracyMetres == Float.MAX_VALUE -> FixLine.UnknownAccuracy
     else -> FixLine.GoodTo(distance(fix.accuracyMetres.toDouble(), units))
 }

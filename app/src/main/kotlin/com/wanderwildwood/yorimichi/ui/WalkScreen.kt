@@ -29,6 +29,7 @@ import com.mudita.mmd.components.text.TextMMD
 import com.mudita.mmd.components.top_app_bar.TopAppBarMMD
 import com.wanderwildwood.yorimichi.R
 import com.wanderwildwood.yorimichi.core.Coord
+import com.wanderwildwood.yorimichi.walk.FixLine
 import com.wanderwildwood.yorimichi.walk.Look
 import com.wanderwildwood.yorimichi.walk.RadiusLabel
 import com.wanderwildwood.yorimichi.walk.WalkState
@@ -57,6 +58,8 @@ fun WalkScreen(
     onOpen: (Coord) -> Unit,
     onSettings: () -> Unit,
     onAllow: () -> Unit,
+    onAppSettings: () -> Unit,
+    onLocationSettings: () -> Unit,
     canHandOff: Boolean,
 ) {
     Scaffold(
@@ -88,8 +91,9 @@ fun WalkScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             when {
+                !state.permitted && state.refusedForGood -> Refused(onAppSettings)
                 !state.permitted -> Asking(onAllow)
-                state.attractor == null -> Before(state, onGo)
+                state.attractor == null -> Before(state, onGo, onLocationSettings)
                 else -> After(state, onAgain, onOpen, canHandOff)
             }
         }
@@ -119,7 +123,29 @@ private fun ColumnScope.Asking(onAllow: () -> Unit) {
 }
 
 @Composable
-private fun ColumnScope.Before(state: WalkState, onGo: () -> Unit) {
+private fun ColumnScope.Refused(onAppSettings: () -> Unit) {
+    Spacer(Modifier.weight(1f))
+    TextMMD(
+        text = stringResource(R.string.walk_refused_why),
+        style = MaterialTheme.typography.titleSmall,
+        textAlign = TextAlign.Center,
+    )
+    Spacer(Modifier.height(12.dp))
+    TextMMD(
+        text = stringResource(R.string.walk_refused_how),
+        style = MaterialTheme.typography.labelSmall,
+        textAlign = TextAlign.Center,
+    )
+    Spacer(Modifier.height(28.dp))
+    ButtonMMD(
+        onClick = onAppSettings,
+        modifier = Modifier.fillMaxWidth().height(52.dp),
+    ) { TextMMD(text = stringResource(R.string.walk_open_app_settings), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium) }
+    Spacer(Modifier.weight(1.4f))
+}
+
+@Composable
+private fun ColumnScope.Before(state: WalkState, onGo: () -> Unit, onLocationSettings: () -> Unit) {
     Spacer(Modifier.weight(1f))
 
     val walk = radii(state.units).firstOrNull { it.metres == state.radiusMetres }
@@ -129,12 +155,38 @@ private fun ColumnScope.Before(state: WalkState, onGo: () -> Unit) {
         textAlign = TextAlign.Center,
     )
 
+    val line = fixLine(
+        fix = state.fix,
+        units = state.units,
+        now = state.now,
+        locationOn = state.locationOn,
+        searchedMillis = state.searchingSince?.let { state.now - it } ?: 0,
+    )
     Spacer(Modifier.height(10.dp))
     TextMMD(
-        text = said(fixLine(state.fix, state.units)),
+        text = said(line),
         style = MaterialTheme.typography.labelSmall,
+        // Bold when there is no fresh position, because then this line is the news.
+        fontWeight = if (line is FixLine.GoodTo || line is FixLine.UnknownAccuracy) null else FontWeight.Bold,
         textAlign = TextAlign.Center,
     )
+    // The why, and what to do about it, wherever the phone is not simply in the open.
+    val hint = when {
+        line is FixLine.Stale && state.locationOn -> stringResource(R.string.hint_stale_looking)
+        line is FixLine.Stale -> stringResource(R.string.hint_stale_off)
+        line == FixLine.Searching -> stringResource(R.string.hint_searching)
+        line == FixLine.NotFound -> stringResource(R.string.hint_not_found)
+        line == FixLine.Off -> stringResource(R.string.hint_off)
+        else -> null
+    }
+    if (hint != null) {
+        Spacer(Modifier.height(6.dp))
+        TextMMD(
+            text = hint,
+            style = MaterialTheme.typography.labelSmall,
+            textAlign = TextAlign.Center,
+        )
+    }
 
     Spacer(Modifier.height(28.dp))
     // No button at all until there is somewhere to start from. A button that is drawn
@@ -144,6 +196,13 @@ private fun ColumnScope.Before(state: WalkState, onGo: () -> Unit) {
             onClick = onGo,
             modifier = Modifier.fillMaxWidth().height(64.dp),
         ) { TextMMD(text = stringResource(R.string.walk_go), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium) }
+    }
+    if (!state.locationOn) {
+        Spacer(Modifier.height(12.dp))
+        OutlinedButtonMMD(
+            onClick = onLocationSettings,
+            modifier = Modifier.fillMaxWidth().height(48.dp),
+        ) { TextMMD(text = stringResource(R.string.walk_turn_on_location), style = MaterialTheme.typography.titleSmall) }
     }
 
     Spacer(Modifier.weight(1.4f))

@@ -3,8 +3,9 @@
 
     <!-- Where you are, to scatter the points around. Coarse is not enough: the walk
          can be a few hundred metres, and a fix good to a city block would put the
-         start somewhere you are not. Nothing is stored and nothing is sent: there is
-         no INTERNET permission here, and the numbers come from the device. -->
+         start somewhere you are not. Only the last fix is kept, on the phone, and
+         nothing is sent: there is no INTERNET permission here, and the numbers come
+         from the device. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- What this app means to look for on the phone. Without it, asking whether
