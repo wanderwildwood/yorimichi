@@ -6,13 +6,18 @@ import androidx.lifecycle.viewModelScope
 import com.wanderwildwood.yorimichi.core.Attractor
 import com.wanderwildwood.yorimichi.core.Selector
 import com.wanderwildwood.yorimichi.core.generate
+import com.wanderwildwood.yorimichi.device.FRESH_MILLIS
 import com.wanderwildwood.yorimichi.device.Fix
 import com.wanderwildwood.yorimichi.device.declination
 import com.wanderwildwood.yorimichi.device.fixes
 import com.wanderwildwood.yorimichi.device.hasCompass
 import com.wanderwildwood.yorimichi.device.hasLocationPermission
+import com.wanderwildwood.yorimichi.device.lastKnown
+import com.wanderwildwood.yorimichi.device.locationOn
+import com.wanderwildwood.yorimichi.device.locationSwitch
 import com.wanderwildwood.yorimichi.device.magneticHeadings
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -23,7 +28,19 @@ import kotlin.random.asKotlinRandom
 /** Everything the one screen needs to draw itself. */
 data class WalkState(
     val permitted: Boolean = false,
+    /**
+     * The permission was refused and Android will not ask again, so the only way left
+     * is the app's page in the system settings.
+     */
+    val refusedForGood: Boolean = false,
+    /** Location switched on for the whole phone. */
+    val locationOn: Boolean = true,
+    /** The newest position known: fresh from the GPS, or remembered, with its time. */
     val fix: Fix? = null,
+    /** When the GPS started listening with location on, or null while it cannot. */
+    val searchingSince: Long? = null,
+    /** The clock the screen reads ages against, moved on every [TICK_MILLIS]. */
+    val now: Long = System.currentTimeMillis(),
     /** Degrees clockwise from **true** north, or null where there is no compass to ask. */
     val heading: Float? = null,
     val hasCompass: Boolean = false,
@@ -41,6 +58,16 @@ data class WalkState(
  * nobody has any way to prefer one number here to another.
  */
 private const val POINTS = 1_024
+
+/**
+ * How often the screen's clock moves on, so that an age goes on counting and the
+ * "still looking" line turns into "not found" while nothing else happens. Ages are said
+ * in whole minutes, so nothing finer is ever visible.
+ */
+private const val TICK_MILLIS = 30_000L
+
+/** How often a fresh fix is written down. It changes every second while walking. */
+private const val SAVE_EVERY_MILLIS = 60_000L
 
 class WalkViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -62,23 +89,79 @@ class WalkViewModel(application: Application) : AndroidViewModel(application) {
     val state = _state.asStateFlow()
 
     private var watching: Job? = null
+    private var savedAt = 0L
 
     init {
         if (_state.value.permitted) watch()
     }
 
-    /** Called when the permission dialog has been answered. */
-    fun permissionAnswered(granted: Boolean) {
-        _state.update { it.copy(permitted = granted) }
+    /**
+     * Called when the permission dialog has been answered. [canAskAgain] is false when
+     * Android has stopped showing the dialog, after a second refusal or a "don't ask".
+     */
+    fun permissionAnswered(granted: Boolean, canAskAgain: Boolean) {
+        _state.update { it.copy(permitted = granted, refusedForGood = !granted && !canAskAgain) }
         if (granted) watch()
+    }
+
+    /** Back on screen, perhaps from the system settings: look again at what may have changed. */
+    fun resumed() {
+        val app = getApplication<Application>()
+        val permitted = hasLocationPermission(app)
+        _state.update {
+            it.copy(
+                permitted = permitted,
+                refusedForGood = it.refusedForGood && !permitted,
+                now = System.currentTimeMillis(),
+            )
+        }
+        if (permitted) watch()
     }
 
     private fun watch() {
         if (watching != null) return
+        val app = getApplication<Application>()
+
+        // Something to start from at once, before the sky has been asked anything: the
+        // newest of whatever the phone still remembers and what this app wrote down last
+        // time. The screen says how old it is.
+        val remembered = listOfNotNull(lastKnown(app), preferences.lastFix).maxByOrNull { it.timeMillis }
+        val now = System.currentTimeMillis()
+        _state.update {
+            it.copy(
+                fix = remembered,
+                locationOn = locationOn(app),
+                searchingSince = if (locationOn(app)) now else null,
+                now = now,
+            )
+        }
+
         watching = viewModelScope.launch {
             launch {
-                fixes(getApplication()).collect { fix ->
-                    _state.update { it.copy(fix = fix) }
+                locationSwitch(app).collect { on ->
+                    _state.update {
+                        it.copy(
+                            locationOn = on,
+                            // The wait starts over each time it is switched on.
+                            searchingSince = when {
+                                !on -> null
+                                it.searchingSince == null -> System.currentTimeMillis()
+                                else -> it.searchingSince
+                            },
+                        )
+                    }
+                }
+            }
+            launch {
+                fixes(app).collect { fix ->
+                    _state.update { it.copy(fix = fix, now = System.currentTimeMillis()) }
+                    remember(fix)
+                }
+            }
+            launch {
+                while (true) {
+                    delay(TICK_MILLIS)
+                    _state.update { it.copy(now = System.currentTimeMillis()) }
                 }
             }
             launch {
@@ -95,6 +178,14 @@ class WalkViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         }
+    }
+
+    /** Write a fresh fix down, now and then, for the next time the sky cannot be found. */
+    private fun remember(fix: Fix) {
+        if (fix.ageMillis(System.currentTimeMillis()) > FRESH_MILLIS) return
+        if (fix.timeMillis - savedAt < SAVE_EVERY_MILLIS) return
+        preferences.lastFix = fix
+        savedAt = fix.timeMillis
     }
 
     /** Pick a place to go. */

@@ -24,24 +24,31 @@ is load-bearing.
 
 ## What happens to your position
 
-It is read from the GPS, held in memory, and used to work out one destination. It is never
-written to disk — not to a file, not to a database, not to the preferences, not to a log.
-When the app stops, it is gone.
+It is read from the GPS and used to work out one destination. One copy of it is kept: the
+last fresh fix, written to the app's private preferences at most once a minute and overwritten
+each time, so that the next time the app opens indoors, where the GPS may not find the sky, it
+can start from where the phone last was and say how long ago that was. There is never more
+than that one position — no track, no history, no log. Clearing the app's storage, or
+uninstalling it, removes it.
+
+When the GPS has no fresh fix the app also reads the position the phone itself last
+remembered (Android's "last known location"), which never leaves the phone either.
 
 The destination is not stored either. Close the app and the walk it gave you is forgotten;
 that is why the coordinate is on the screen for you to write down if you want it.
 
 ## What is stored, and where
 
-Three settings, in the app's own private storage:
+Three settings and one position, in the app's own private storage:
 
 ```
-shared_prefs/detour.xml   →   radius, look, units
+shared_prefs/detour.xml   →   radius, look, units, last_lat, last_lon, last_accuracy, last_time
 ```
 
 How far a walk may send you, whether it aims for where the points gather or where they thin
-out, and whether distances are said in miles or kilometres. That is all of it. No history, no
-log of where you have been, no record of what it has ever suggested.
+out, whether distances are said in miles or kilometres, and the last fresh fix with its
+accuracy and time. That is all of it. No history, no log of where you have been, no record of
+what it has ever suggested.
 
 `android:allowBackup="false"` is set, so not even that goes to a cloud backup.
 

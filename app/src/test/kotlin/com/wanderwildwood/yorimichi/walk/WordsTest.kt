@@ -61,10 +61,9 @@ class WordsTest {
 
     @Test
     fun `the fix line says what is known about the fix`() {
-        assertEquals(FixLine.Waiting, fixLine(null, Units.METRIC))
         assertEquals(
             FixLine.GoodTo(Distance.Metres(10)),
-            fixLine(Fix(Coord(0.0, 0.0), 8f, 0), Units.METRIC),
+            fixLine(Fix(Coord(0.0, 0.0), 8f, NOW), Units.METRIC, NOW),
         )
     }
 
@@ -72,7 +71,28 @@ class WordsTest {
     fun `an old fix says how old`() {
         assertEquals(
             FixLine.Stale(Age.Minutes(20)),
-            fixLine(Fix(Coord(0.0, 0.0), 5f, 20 * 60_000), Units.METRIC),
+            fixLine(Fix(Coord(0.0, 0.0), 5f, NOW - 20 * 60_000), Units.METRIC, NOW),
+        )
+        assertEquals(
+            FixLine.Stale(Age.Hours(2)),
+            fixLine(Fix(Coord(0.0, 0.0), 5f, NOW - 2 * 3_600_000), Units.METRIC, NOW, locationOn = false),
+        )
+    }
+
+    @Test
+    fun `a fix grows old as the clock moves on`() {
+        val fix = Fix(Coord(0.0, 0.0), 5f, NOW)
+        assertEquals(FixLine.GoodTo(Distance.Metres(10)), fixLine(fix, Units.METRIC, NOW + 60_000))
+        assertEquals(FixLine.Stale(Age.Minutes(3)), fixLine(fix, Units.METRIC, NOW + 3 * 60_000))
+    }
+
+    @Test
+    fun `with no position at all the line says why`() {
+        assertEquals(FixLine.Searching, fixLine(null, Units.METRIC, NOW, searchedMillis = 30_000))
+        assertEquals(FixLine.NotFound, fixLine(null, Units.METRIC, NOW, searchedMillis = GIVE_UP_MILLIS))
+        assertEquals(
+            FixLine.Off,
+            fixLine(null, Units.METRIC, NOW, locationOn = false, searchedMillis = GIVE_UP_MILLIS),
         )
     }
 
@@ -95,3 +115,6 @@ class WordsTest {
         }
     }
 }
+
+/** An invented moment, for the ages above to be measured from. */
+private const val NOW = 1_800_000_000_000L

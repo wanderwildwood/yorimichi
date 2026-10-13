@@ -50,7 +50,9 @@ fun said(reading: Reading): String = when (reading) {
 
 @Composable
 fun said(line: FixLine): String = when (line) {
-    FixLine.Waiting -> stringResource(R.string.fix_waiting)
+    FixLine.Searching -> stringResource(R.string.fix_searching)
+    FixLine.NotFound -> stringResource(R.string.fix_not_found)
+    FixLine.Off -> stringResource(R.string.fix_off)
     is FixLine.Stale -> stringResource(R.string.fix_stale, said(line.age))
     FixLine.UnknownAccuracy -> stringResource(R.string.fix_unknown_accuracy)
     is FixLine.GoodTo -> stringResource(R.string.fix_good_to, said(line.accuracy))

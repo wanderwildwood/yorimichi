@@ -1,7 +1,10 @@
 package com.wanderwildwood.yorimichi.device
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
@@ -13,17 +16,20 @@ import com.wanderwildwood.yorimichi.core.Coord
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 
-/** Where the phone thinks it is, and how well it knows. */
+/** Where the phone thinks it is, how well it knows, and since when. */
 data class Fix(
     val coord: Coord,
     val accuracyMetres: Float,
-    /** How long ago the fix was taken. */
-    val ageMillis: Long,
+    /** When the fix was taken, by the wall clock, so that it still means something after a restart. */
+    val timeMillis: Long,
 ) {
-    /** Good enough to scatter points around. */
-    val usable: Boolean get() = accuracyMetres <= 50f && ageMillis < 120_000
+    fun ageMillis(now: Long): Long = (now - timeMillis).coerceAtLeast(0)
 }
+
+/** A fix is fresh for two minutes. After that it is somewhere the phone was. */
+const val FRESH_MILLIS = 120_000L
 
 fun hasLocationPermission(context: Context): Boolean =
     ContextCompat.checkSelfPermission(
@@ -31,18 +37,64 @@ fun hasLocationPermission(context: Context): Boolean =
         android.Manifest.permission.ACCESS_FINE_LOCATION,
     ) == PackageManager.PERMISSION_GRANTED
 
+/** Whether location is switched on for the whole phone, in the system's settings or the shade. */
+fun locationOn(context: Context): Boolean =
+    (context.getSystemService(Context.LOCATION_SERVICE) as LocationManager).isLocationEnabled
+
+/** The location switch, now and every time it is flipped, from the settings or the shade. */
+fun locationSwitch(context: Context): Flow<Boolean> = callbackFlow {
+    val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            trySend(locationOn(context))
+        }
+    }
+    trySend(locationOn(context))
+    ContextCompat.registerReceiver(
+        context,
+        receiver,
+        IntentFilter(LocationManager.MODE_CHANGED_ACTION),
+        ContextCompat.RECEIVER_NOT_EXPORTED,
+    )
+    awaitClose { context.unregisterReceiver(receiver) }
+}.distinctUntilChanged()
+
+private fun Location.toFix(): Fix {
+    val age = (SystemClock.elapsedRealtimeNanos() - elapsedRealtimeNanos) / 1_000_000
+    return Fix(
+        coord = Coord(latitude, longitude),
+        accuracyMetres = if (hasAccuracy()) accuracy else Float.MAX_VALUE,
+        timeMillis = System.currentTimeMillis() - age.coerceAtLeast(0),
+    )
+}
+
 /**
- * A stream of fixes from the GPS.
+ * The newest position any provider on the phone still remembers, however old.
+ *
+ * Every provider is asked, not just the GPS: only the GPS is listened to for a fresh fix
+ * (see [fixes]), but a position the phone already holds costs nothing to read, and a
+ * stale one shown with its age is far better than a screen that waits. The age is always
+ * said, so a walk is never scattered around somewhere the phone was yesterday without the
+ * screen saying so.
+ */
+@SuppressLint("MissingPermission")
+fun lastKnown(context: Context): Fix? {
+    if (!hasLocationPermission(context)) return null
+    val manager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    return runCatching { manager.allProviders }.getOrDefault(emptyList())
+        .mapNotNull { provider -> runCatching { manager.getLastKnownLocation(provider) }.getOrNull() }
+        .map { it.toFix() }
+        .maxByOrNull { it.timeMillis }
+}
+
+/**
+ * A stream of fresh fixes from the GPS.
  *
  * The GPS provider only, deliberately. The network provider on a phone with no Google
  * services behind it has nothing to answer with, so registering for it is registering
- * for a callback that never comes, and taking its last known fix means taking one from
- * whenever the phone last had a different set of software on it.
+ * for a callback that never comes. The Kompakt has the GPS and nothing else.
  *
- * The last known GPS fix goes out first anyway, stale or not, because a stale fix with
- * its age shown beats an empty screen while the sky is being found — and the age is
- * shown, so a walk is never scattered around somewhere the phone was yesterday without
- * saying so.
+ * The registration outlives the location switch: turned off, the GPS falls silent, and
+ * turned back on it starts answering this same listener again.
  */
 @SuppressLint("MissingPermission")
 fun fixes(context: Context): Flow<Fix> = callbackFlow {
@@ -53,22 +105,10 @@ fun fixes(context: Context): Flow<Fix> = callbackFlow {
 
     val manager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-    fun send(location: Location?) {
-        if (location == null) return
-        val age = (SystemClock.elapsedRealtimeNanos() - location.elapsedRealtimeNanos) / 1_000_000
-        trySend(
-            Fix(
-                coord = Coord(location.latitude, location.longitude),
-                accuracyMetres = if (location.hasAccuracy()) location.accuracy else Float.MAX_VALUE,
-                ageMillis = age.coerceAtLeast(0),
-            )
-        )
-    }
-
-    send(runCatching { manager.getLastKnownLocation(LocationManager.GPS_PROVIDER) }.getOrNull())
-
     val listener = object : LocationListener {
-        override fun onLocationChanged(location: Location) = send(location)
+        override fun onLocationChanged(location: Location) {
+            trySend(location.toFix())
+        }
 
         // Deprecated on API 29 and up and never called there, but the interface still
         // declares it on the SDK this builds against.

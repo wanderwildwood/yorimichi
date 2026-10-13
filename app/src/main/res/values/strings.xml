@@ -12,9 +12,16 @@
 
     <!-- Before the location permission is granted -->
     <string name="walk_asking_why">Detour needs to know where you are, to scatter its points around you.</string>
-    <string name="walk_asking_privacy">It is not stored and it is not sent anywhere. The app has no way to reach the network.</string>
+    <string name="walk_asking_privacy">It stays on the phone and is not sent anywhere. The app has no way to reach the network.</string>
     <!-- Button that asks for the location permission (verb) -->
     <string name="walk_allow">Allow</string>
+    <!-- When the location permission has been refused and Android will no longer ask -->
+    <string name="walk_refused_why">Location is not allowed for Detour, so it cannot tell where you are.</string>
+    <string name="walk_refused_how">Allow it in Detour\'s app settings, under Permissions, then Location.</string>
+    <!-- Button that opens Detour's page in the system settings -->
+    <string name="walk_open_app_settings">Open app settings</string>
+    <!-- Button that opens the system location settings, shown while location is off -->
+    <string name="walk_turn_on_location">Turn on location</string>
 
     <!-- Before a walk. %1$s is the radius, e.g. "2 km" or "1 mile"; %2$s is one of the look_ phrases below -->
     <string name="walk_within">Within %1$s, %2$s.</string>
@@ -87,9 +94,21 @@
     <string name="reading_thinner">The points fell %1$s times thinner here than an even scatter.</string>
 
     <!-- Before a walk: what the phone knows about its own position (a "fix", from GPS) -->
-    <string name="fix_waiting">Waiting for a fix</string>
-    <!-- %1$s is an age from the age_ strings below, e.g. "20 min" -->
-    <string name="fix_stale">Last fix %1$s ago</string>
+    <!-- No position at all yet; the GPS is listening -->
+    <string name="fix_searching">Looking for a GPS fix</string>
+    <string name="hint_searching">GPS needs open sky. Indoors it can take minutes, or never come.</string>
+    <!-- No position at all after two minutes of listening -->
+    <string name="fix_not_found">No GPS fix yet</string>
+    <string name="hint_not_found">Try outside, away from walls and tall buildings, with this screen open. Detour carries on as soon as a fix comes.</string>
+    <!-- No position at all, and location is switched off for the whole phone -->
+    <string name="fix_off">Location is off on this phone</string>
+    <string name="hint_off">Detour needs it on to find where you are.</string>
+    <!-- An old position is being used. %1$s is an age from the age_ strings below, e.g. "2 hr" -->
+    <string name="fix_stale">From where the phone was %1$s ago</string>
+    <!-- Under fix_stale, while the GPS is still listening -->
+    <string name="hint_stale_looking">Still looking for a fresh fix, and will use it as soon as one comes.</string>
+    <!-- Under fix_stale, while location is switched off -->
+    <string name="hint_stale_off">Location is off, so it cannot look for a fresh one.</string>
     <string name="fix_unknown_accuracy">Fix of unknown accuracy</string>
     <!-- %1$s is a distance from the distance_ strings above, e.g. "10 m" -->
     <string name="fix_good_to">Fix good to %1$s</string>

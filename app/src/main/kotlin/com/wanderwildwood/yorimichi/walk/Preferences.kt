@@ -1,6 +1,8 @@
 package com.wanderwildwood.yorimichi.walk
 
 import android.content.Context
+import com.wanderwildwood.yorimichi.core.Coord
+import com.wanderwildwood.yorimichi.device.Fix
 
 /** Which end of the scatter to be sent to. */
 enum class Look { GATHER, THIN }
@@ -53,7 +55,7 @@ fun radii(units: Units): List<Radius> = when (units) {
 fun nearestRadius(metres: Int, units: Units): Radius =
     radii(units).minBy { kotlin.math.abs(it.metres - metres) }
 
-/** The three things there are to set. */
+/** The three things there are to set, and the last place the phone was. */
 class Preferences(context: Context) {
 
     private val store = context.getSharedPreferences("detour", Context.MODE_PRIVATE)
@@ -70,9 +72,46 @@ class Preferences(context: Context) {
         get() = Units.valueOf(store.getString(UNITS, Units.IMPERIAL.name) ?: Units.IMPERIAL.name)
         set(value) = store.edit().putString(UNITS, value.name).apply()
 
+    /**
+     * The last fresh fix, one only, overwritten each time.
+     *
+     * Kept because the GPS forgets across a restart, and indoors it may not find the sky
+     * again for a long time: with this the app can still start from where the phone last
+     * was, and say how long ago that was. It stays in the app's private storage, which is
+     * not backed up, and the app has no way to send it anywhere.
+     */
+    var lastFix: Fix?
+        get() {
+            if (!store.contains(LAST_TIME)) return null
+            return Fix(
+                coord = Coord(
+                    Double.fromBits(store.getLong(LAST_LAT, 0)),
+                    Double.fromBits(store.getLong(LAST_LON, 0)),
+                ),
+                accuracyMetres = store.getFloat(LAST_ACCURACY, Float.MAX_VALUE),
+                timeMillis = store.getLong(LAST_TIME, 0),
+            )
+        }
+        set(value) {
+            val edit = store.edit()
+            if (value == null) {
+                edit.remove(LAST_LAT).remove(LAST_LON).remove(LAST_ACCURACY).remove(LAST_TIME)
+            } else {
+                edit.putLong(LAST_LAT, value.coord.lat.toRawBits())
+                    .putLong(LAST_LON, value.coord.lon.toRawBits())
+                    .putFloat(LAST_ACCURACY, value.accuracyMetres)
+                    .putLong(LAST_TIME, value.timeMillis)
+            }
+            edit.apply()
+        }
+
     private companion object {
         const val RADIUS = "radius"
         const val LOOK = "look"
         const val UNITS = "units"
+        const val LAST_LAT = "last_lat"
+        const val LAST_LON = "last_lon"
+        const val LAST_ACCURACY = "last_accuracy"
+        const val LAST_TIME = "last_time"
     }
 }
