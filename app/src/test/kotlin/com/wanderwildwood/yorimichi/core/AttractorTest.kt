@@ -45,6 +45,33 @@ class AttractorTest {
     }
 
     @Test
+    fun `every kind of place is inside the radius, over many runs`() {
+        // The thin places used to land in the corners of the square the density was worked
+        // out on, out to the radius times the square root of two. Fifty runs of each kind.
+        val radius = 3 * 1609.344
+        for (selector in listOf(Selector.Densest, Selector.Emptiest, Selector.Quantile(0.1), Selector.Quantile(0.5))) {
+            for (seed in 1..50) {
+                val a = generate(here, radius, 256, selector, Random(seed))
+                assertTrue("$selector seed $seed landed ${a.distanceMetres} m out", a.distanceMetres <= radius * 1.001)
+            }
+        }
+    }
+
+    @Test
+    fun `places fall evenly over the disc, not piled at its rim or its middle`() {
+        // The inner disc of radius R over the square root of two is half the area, so an
+        // even pick lands inside it about half the time. Ranked raw, the voids sat on the rim
+        // (none inside) and the attractors crowded the middle.
+        val radius = 3000.0
+        val inner = radius / sqrt(2.0)
+        for (selector in listOf(Selector.Emptiest, Selector.Densest)) {
+            val runs = 120
+            val near = (1..runs).count { generate(here, radius, 256, selector, Random(it)).distanceMetres < inner }
+            assertEquals("$selector: $near of $runs in the inner half", 0.5, near / runs.toDouble(), 0.15)
+        }
+    }
+
+    @Test
     fun `the same seed gives the same place twice`() {
         assertEquals(run().point, run().point)
     }

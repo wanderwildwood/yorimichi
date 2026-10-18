@@ -39,7 +39,11 @@ data class Attractor(
     val point: Coord,
     val distanceMetres: Double,
     val bearingDegrees: Double,
-    /** Unnormalised kernel density at the chosen cell. Comparable only within one run. */
+    /**
+     * How far the scatter's density at the chosen cell stands above (or below, when negative)
+     * what an even scatter would give there, in units of how far chance strays there. This is
+     * what the cells are ranked by. Comparable only within one run.
+     */
     val density: Double,
     /**
      * How much thicker the scatter is around the chosen point than an even scatter
@@ -124,7 +128,56 @@ fun generate(
         }
     }
 
-    val chosen = choose(densities, selector)
+    // What an even scatter would put on each cell, and how much that wanders from run to run,
+    // worked out the same way from points laid evenly over the disc by rule rather than by
+    // chance. Near the rim a cell's kernel hangs half outside the disc, where no point can
+    // fall, so every cell there reads thin; ranked raw, the voids all sat on the rim and the
+    // attractors near the middle. Ranked against this, a place anywhere in the disc is about as
+    // likely as any other to be picked.
+    val (evenEast, evenNorth) = evenly(radiusMetres, EVEN_POINTS)
+    val evenWeightEast = Array(GRID) { cell ->
+        DoubleArray(EVEN_POINTS) { p ->
+            val u = (cellEast[cell] - evenEast[p]) / bandwidthEast
+            exp(-0.5 * u * u)
+        }
+    }
+    val evenWeightNorth = Array(GRID) { cell ->
+        DoubleArray(EVEN_POINTS) { p ->
+            val v = (cellNorth[cell] - evenNorth[p]) / bandwidthNorth
+            exp(-0.5 * v * v)
+        }
+    }
+    val scale = pointCount.toDouble() / EVEN_POINTS
+    val relative = DoubleArray(GRID * GRID)
+    for (i in 0 until GRID) {
+        val we = evenWeightEast[i]
+        for (j in 0 until GRID) {
+            val wn = evenWeightNorth[j]
+            var sum = 0.0
+            var squares = 0.0
+            for (p in 0 until EVEN_POINTS) {
+                val w = we[p] * wn[p]
+                sum += w
+                squares += w * w
+            }
+            // How far this cell is from what chance would put there, in units of how far
+            // chance itself strays there: thin rim cells stray most, and judged by the raw
+            // gap they would still take most of the extremes.
+            relative[i * GRID + j] = (densities[i * GRID + j] - sum * scale) / sqrt(max(squares * scale, 1e-300))
+        }
+    }
+
+    // Only the cells inside the disc are candidates. The lattice is square, spanning the
+    // points, and its corners reach out to the radius times the square root of two; no points
+    // fall there, so they are the thinnest cells of all, and "where they thin out" sent the
+    // walker to them, 4.2 miles out on a 3 mile walk.
+    val radiusSquared = radiusMetres * radiusMetres
+    val inside = (0 until GRID * GRID).filter { cell ->
+        val e = cellEast[cell / GRID]
+        val n = cellNorth[cell % GRID]
+        e * e + n * n <= radiusSquared
+    }
+    val chosen = choose(relative, inside, selector)
     val chosenEast = cellEast[chosen / GRID]
     val chosenNorth = cellNorth[chosen % GRID]
     val point = origin.offset(chosenEast, chosenNorth)
@@ -133,7 +186,7 @@ fun generate(
         point = point,
         distanceMetres = origin.distanceTo(point),
         bearingDegrees = origin.bearingTo(point),
-        density = densities[chosen],
+        density = relative[chosen],
         concentration = concentration(east, north, chosenEast, chosenNorth, radiusMetres),
         points = pointCount,
         radiusMetres = radiusMetres,
@@ -202,15 +255,36 @@ internal fun scatter(
     return east to north
 }
 
-/** Index into [densities] of the cell [selector] asks for. */
-private fun choose(densities: DoubleArray, selector: Selector): Int = when (selector) {
-    Selector.Densest -> densities.indices.maxBy { densities[it] }
-    Selector.Emptiest -> densities.indices.minBy { densities[it] }
+/** How many points [evenly] lays over the disc to say what an even scatter looks like. */
+private const val EVEN_POINTS = 1024
+
+/**
+ * [count] points laid evenly over the disc of [radiusMetres] by rule, as metres east and
+ * north: a sunflower spiral, each a golden angle round from the last and out by the square
+ * root, so equal areas hold equal numbers of points with no clumps and no gaps.
+ */
+internal fun evenly(radiusMetres: Double, count: Int): Pair<DoubleArray, DoubleArray> {
+    val golden = PI * (3.0 - sqrt(5.0))
+    val east = DoubleArray(count)
+    val north = DoubleArray(count)
+    for (i in 0 until count) {
+        val r = radiusMetres * sqrt((i + 0.5) / count)
+        val theta = i * golden
+        east[i] = r * cos(theta)
+        north[i] = r * sin(theta)
+    }
+    return east to north
+}
+
+/** Index into [densities] of the cell [selector] asks for, from the [candidates] only. */
+private fun choose(densities: DoubleArray, candidates: List<Int>, selector: Selector): Int = when (selector) {
+    Selector.Densest -> candidates.maxBy { densities[it] }
+    Selector.Emptiest -> candidates.minBy { densities[it] }
     is Selector.Quantile -> {
         require(selector.fraction in 0.0..1.0) { "quantile must be between 0 and 1" }
         // Rank the cells and take the one that far up. Sorting the indices rather than
         // the densities keeps the cell's position, which is the part we came for.
-        val ranked = densities.indices.sortedBy { densities[it] }
+        val ranked = candidates.sortedBy { densities[it] }
         ranked[((ranked.size - 1) * selector.fraction).toInt()]
     }
 }
