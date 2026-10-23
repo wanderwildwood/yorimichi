@@ -19,17 +19,8 @@ already ships with.
 
 ## Where this is up to
 
-Version 0.1.0, and honest about it: the maths is unit tested, every screen has been driven on
-an emulator, and the signed release has been installed and exercised — but **nobody has
-actually walked it yet.** Not once. It has never been outdoors.
-
-So the things still unknown are the ones only a walk can answer. How long the GPS takes to fix
-under trees. Whether an arrow that updates in five-degree steps is steady enough to follow on
-an E Ink panel, or whether it judders. Whether the line about how thick the scatter was reads
-as useful or as noise when you are standing in a field wondering why you came.
-
-It is public at this stage precisely because of that. If you take it out, what happened is the
-most useful thing you could send back.
+Version 0.1.12. The maths is unit tested, every screen has been driven on an emulator, and the
+signed release has been installed and exercised.
 
 ## What it does
 
@@ -125,6 +116,17 @@ Issues and pull requests are welcome. The things that would help most, roughly i
 
 Two things this app will not take, so nobody wastes an afternoon on them: a map drawn inside
 the app, and any claim that intention influences the numbers. The README says why for both.
+
+## Getting it, and keeping it
+
+Download <https://github.com/wanderwildwood/yorimichi/releases/latest/download/yorimichi.apk>
+and sideload it. That address always points at the newest release, and every release
+publishes a `.sha256` beside the APK if you would rather check than trust.
+
+For updates without doing this by hand, add this repository to
+[Obtainium](https://github.com/ImranR98/Obtainium):
+
+    https://github.com/wanderwildwood/yorimichi
 
 ## Licence
 
