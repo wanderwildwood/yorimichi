@@ -48,7 +48,18 @@ data class WalkState(
     val radiusMetres: Int = 2_000,
     val look: Look = Look.GATHER,
     val units: Units = Units.IMPERIAL,
-)
+) {
+    /** From where the phone is now to the point, or null with no walk or no position. */
+    val leg: Leg?
+        get() {
+            val f = fix ?: return null
+            val a = attractor ?: return null
+            return leg(f.coord, a.point)
+        }
+
+    /** The position is too old to follow, or location is off: the distance is not live. */
+    val positionLost: Boolean get() = staleWhileWalking(fix, now) || !locationOn
+}
 
 /**
  * How many points the scatter is made of.
@@ -115,7 +126,13 @@ class WalkViewModel(application: Application) : AndroidViewModel(application) {
                 now = System.currentTimeMillis(),
             )
         }
-        if (permitted) watch()
+        if (permitted) {
+            watch()
+            // Whatever the phone learned while the screen was away.
+            lastKnown(app)?.let { known ->
+                _state.update { if (accept(it.fix, known)) it.copy(fix = known) else it }
+            }
+        }
     }
 
     private fun watch() {
@@ -154,7 +171,9 @@ class WalkViewModel(application: Application) : AndroidViewModel(application) {
             }
             launch {
                 fixes(app).collect { fix ->
-                    _state.update { it.copy(fix = fix, now = System.currentTimeMillis()) }
+                    _state.update {
+                        if (accept(it.fix, fix)) it.copy(fix = fix, now = System.currentTimeMillis()) else it
+                    }
                     remember(fix)
                 }
             }

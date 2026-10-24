@@ -46,6 +46,13 @@
 
     <!-- Distances. %1$s is a whole number for feet and metres, and has one decimal
          place for miles and kilometres, e.g. "0.6 mi" or "1.0 km" -->
+    <string name="walk_arrived">You are here</string>
+    <!-- %1$s is a distance, e.g. "80 ft" -->
+    <string name="walk_arrived_within">Within %1$s of the point</string>
+    <!-- %1$s is an age, e.g. "2 min" -->
+    <string name="walk_lost_old">Position lost %1$s ago, so the distance is not following you</string>
+    <string name="walk_lost_none">No position, so the distance is not following you</string>
+    <string name="walk_lost_off">Location is off, so the distance is not following you</string>
     <string name="distance_feet">%1$s ft</string>
     <string name="distance_miles">%1$s mi</string>
     <string name="distance_metres">%1$s m</string>

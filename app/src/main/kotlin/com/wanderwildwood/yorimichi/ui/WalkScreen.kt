@@ -29,7 +29,10 @@ import com.mudita.mmd.components.text.TextMMD
 import com.mudita.mmd.components.top_app_bar.TopAppBarMMD
 import com.wanderwildwood.yorimichi.R
 import com.wanderwildwood.yorimichi.core.Coord
+import com.wanderwildwood.yorimichi.walk.ARRIVED_METRES
 import com.wanderwildwood.yorimichi.walk.FixLine
+import com.wanderwildwood.yorimichi.walk.Leg
+import com.wanderwildwood.yorimichi.walk.age
 import com.wanderwildwood.yorimichi.walk.Look
 import com.wanderwildwood.yorimichi.walk.RadiusLabel
 import com.wanderwildwood.yorimichi.walk.WalkState
@@ -216,30 +219,64 @@ private fun ColumnScope.After(
     canHandOff: Boolean,
 ) {
     val attractor = state.attractor ?: return
+    // From the phone's position now, on every fix; the numbers the walk started with are
+    // only the fallback for a screen that somehow has no position at all.
+    val leg = state.leg ?: Leg(attractor.distanceMetres, attractor.bearingDegrees, false)
 
     Spacer(Modifier.height(8.dp))
-    Arrow(
-        bearingDegrees = attractor.bearingDegrees,
-        headingDegrees = state.heading,
-        modifier = Modifier.size(210.dp),
-    )
+    if (leg.arrived) {
+        Spacer(Modifier.height(60.dp))
+        TextMMD(
+            text = stringResource(R.string.walk_arrived),
+            fontSize = 44.sp,
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(8.dp))
+        TextMMD(
+            text = stringResource(R.string.walk_arrived_within, said(distance(ARRIVED_METRES, state.units))),
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Center,
+        )
+    } else {
+        Arrow(
+            bearingDegrees = leg.bearingDegrees,
+            headingDegrees = state.heading,
+            modifier = Modifier.size(210.dp),
+        )
 
-    Spacer(Modifier.height(14.dp))
-    TextMMD(
-        text = said(distance(attractor.distanceMetres, state.units)),
-        fontSize = 44.sp,
-        fontWeight = FontWeight.Medium,
-    )
-    TextMMD(
-        text = if (state.heading == null) {
-            // Said out loud, because with no compass the ring is drawn north-up and the
-            // reader has to do the turning themselves.
-            stringResource(R.string.walk_bearing_no_compass, said(bearing(attractor.bearingDegrees)))
-        } else {
-            said(bearing(attractor.bearingDegrees))
-        },
-        style = MaterialTheme.typography.bodySmall,
-    )
+        Spacer(Modifier.height(14.dp))
+        TextMMD(
+            text = said(distance(leg.distanceMetres, state.units)),
+            fontSize = 44.sp,
+            fontWeight = FontWeight.Medium,
+        )
+        TextMMD(
+            text = if (state.heading == null) {
+                // Said out loud, because with no compass the ring is drawn north-up and the
+                // reader has to do the turning themselves.
+                stringResource(R.string.walk_bearing_no_compass, said(bearing(leg.bearingDegrees)))
+            } else {
+                said(bearing(leg.bearingDegrees))
+            },
+            style = MaterialTheme.typography.bodySmall,
+        )
+    }
+
+    if (state.positionLost) {
+        Spacer(Modifier.height(8.dp))
+        val fix = state.fix
+        TextMMD(
+            text = when {
+                !state.locationOn -> stringResource(R.string.walk_lost_off)
+                fix == null -> stringResource(R.string.walk_lost_none)
+                else -> stringResource(R.string.walk_lost_old, said(age(fix.ageMillis(state.now))))
+            },
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+        )
+    }
 
     Spacer(Modifier.height(16.dp))
     TextMMD(text = coordinate(attractor.point), style = MaterialTheme.typography.bodySmall)

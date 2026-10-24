@@ -87,11 +87,11 @@ fun lastKnown(context: Context): Fix? {
 }
 
 /**
- * A stream of fresh fixes from the GPS.
+ * A stream of fresh fixes, for as long as it is collected.
  *
- * The GPS provider only, deliberately. The network provider on a phone with no Google
- * services behind it has nothing to answer with, so registering for it is registering
- * for a callback that never comes. The Kompakt has the GPS and nothing else.
+ * The GPS every second, and the network provider too where the phone has one, so that a
+ * weak sky still gives a position now and then. A provider the phone does not have is
+ * simply not registered. The caller decides which of two fixes to keep (see `accept`).
  *
  * The registration outlives the location switch: turned off, the GPS falls silent, and
  * turned back on it starts answering this same listener again.
@@ -120,6 +120,11 @@ fun fixes(context: Context): Flow<Fix> = callbackFlow {
 
     runCatching {
         manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1_000L, 0f, listener)
+    }
+    runCatching {
+        if (LocationManager.NETWORK_PROVIDER in manager.allProviders) {
+            manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5_000L, 0f, listener)
+        }
     }
 
     awaitClose { manager.removeUpdates(listener) }
