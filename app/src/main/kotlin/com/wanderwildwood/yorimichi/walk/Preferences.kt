@@ -10,6 +10,16 @@ enum class Look { GATHER, THIN }
 /** Which units distances are said in. */
 enum class Units { IMPERIAL, METRIC }
 
+/**
+ * Miles and feet where the country uses them (the United States, the United Kingdom, Liberia
+ * and Myanmar), kilometres and metres everywhere else. Only the first-run choice: the Settings
+ * row changes it and the choice is kept.
+ */
+fun unitsForCountry(country: String?): Units = when (country?.uppercase()) {
+    "US", "GB", "LR", "MM" -> Units.IMPERIAL
+    else -> Units.METRIC
+}
+
 /** How far a walk may be, and how that distance is said. */
 data class Radius(val metres: Int, val label: RadiusLabel)
 
@@ -69,7 +79,8 @@ class Preferences(context: Context) {
         set(value) = store.edit().putString(LOOK, value.name).apply()
 
     var units: Units
-        get() = Units.valueOf(store.getString(UNITS, Units.IMPERIAL.name) ?: Units.IMPERIAL.name)
+        get() = store.getString(UNITS, null)?.let { Units.valueOf(it) }
+            ?: unitsForCountry(java.util.Locale.getDefault().country)
         set(value) = store.edit().putString(UNITS, value.name).apply()
 
     /**
@@ -105,7 +116,13 @@ class Preferences(context: Context) {
             edit.apply()
         }
 
+    /** Whether the first-run safety notice has been read. */
+    var safetySeen: Boolean
+        get() = store.getBoolean(SAFETY_SEEN, false)
+        set(value) = store.edit().putBoolean(SAFETY_SEEN, value).apply()
+
     private companion object {
+        const val SAFETY_SEEN = "safety_seen"
         const val RADIUS = "radius"
         const val LOOK = "look"
         const val UNITS = "units"

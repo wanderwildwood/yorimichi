@@ -118,7 +118,7 @@
     <string name="hint_stale_off">Location is off, so it cannot look for a fresh one.</string>
     <string name="fix_unknown_accuracy">Fix of unknown accuracy</string>
     <!-- %1$s is a distance from the distance_ strings above, e.g. "10 m" -->
-    <string name="fix_good_to">Fix good to %1$s</string>
+    <string name="fix_good_to">Fix within %1$s</string>
     <!-- How old the fix is. "min" is minutes and "hr" is hours, abbreviated -->
     <string name="age_minutes">%1$s min</string>
     <string name="age_hours">%1$s hr</string>
@@ -144,17 +144,32 @@
     <string name="settings_units_metric">Kilometres and metres</string>
 
     <!-- ============================================================ -->
-    <!-- About dialog. Keep the names of the app, projects and licences as they are -->
+    <!-- About: three pages. Keep the names of the app, projects and licences as they are -->
 
     <!-- Heading. %1$s is the version number, e.g. 0.1.0 -->
     <string name="about_title">Detour %1$s</string>
-    <string name="about_privacy">Your position never leaves the phone, and the app cannot reach the network at all.</string>
+    <string name="about_page_next">Next</string>
+    <string name="about_page_back">Back</string>
+    <!-- Page 1 -->
+    <string name="about_what">Detour gives you a place within walking distance, picked from the phone\'s own random numbers, and points the way.</string>
     <string name="about_randomness">The numbers come from the phone\'s own generator. They are not quantum, and nothing here has been shown to know anything.</string>
-    <!-- The name of the app's licence -->
+    <string name="about_safety_heading">Before you go</string>
+    <!-- Also shown with the destination, and once on first opening -->
+    <string name="safety_notice">Random places can be private property or unsafe. Respect signs and owners, and do not go anywhere you would not go without the app.</string>
+    <!-- Page 2 -->
+    <string name="about_privacy_heading">Privacy</string>
+    <string name="about_privacy">Everything stays on this phone. The app has no internet access, so nothing is sent anywhere, and nothing is collected about you.\n\nIt uses the phone\'s location while it is open, to place a walk around you. The last position is kept on the phone, one only, so the app can start indoors. Open in maps hands the destination to the map app you pick; the app has no map of its own. The links at the foot of About open your browser.\n\nThere are no ads, no analytics and no tracking. Backups and exports go only where you choose to save them.</string>
+    <string name="about_terms_heading">Terms</string>
+    <string name="about_terms">This app is free software under the GNU General Public License v3. It comes with no warranty: use it at your own risk.\n\nRandom places can be private property or unsafe. Respect signs and owners, and do not go anywhere you would not go without the app.</string>
+    <!-- Page 3 -->
+    <string name="about_made_heading">Made from</string>
     <string name="about_licence">GNU General Public License v3</string>
+    <string name="about_libraries">Mudita MMD, Jetpack Compose and AndroidX, Apache 2.0. The Lato typeface inside MMD, SIL Open Font Licence 1.1.</string>
     <string name="about_icons">Icons from Material Symbols, Apache 2.0</string>
+    <string name="about_source_text">Source: github.com/wanderwildwood/yorimichi</string>
     <!-- The donation link label, beside a drawing of a llama. A fixed phrase: a verb and an object, so the reader knows what pressing it does -->
     <string name="about_feed_the_llamas">feed the llamas</string>
-    <!-- Button that closes the About dialog -->
-    <string name="about_close">Close</string>
+    <string name="about_no_browser">There is no browser on this phone to open that with.</string>
+    <!-- Button that closes the first-run notice -->
+    <string name="safety_ok">Understood</string>
 </resources>

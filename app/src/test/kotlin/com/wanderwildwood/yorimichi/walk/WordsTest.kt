@@ -60,6 +60,22 @@ class WordsTest {
     }
 
     @Test
+    fun `a very good fix never reads as zero`() {
+        assertEquals(FixLine.GoodTo(Distance.Metres(10)), fixLine(Fix(Coord(0.0, 0.0), 0.4f, NOW), Units.METRIC, NOW))
+        assertEquals(FixLine.GoodTo(Distance.Feet(30)), fixLine(Fix(Coord(0.0, 0.0), 1f, NOW), Units.IMPERIAL, NOW))
+        assertEquals(FixLine.GoodTo(Distance.Metres(20)), fixLine(Fix(Coord(0.0, 0.0), 19f, NOW), Units.METRIC, NOW))
+    }
+
+    @Test
+    fun `units follow the phone's country`() {
+        assertEquals(Units.IMPERIAL, unitsForCountry("US"))
+        assertEquals(Units.IMPERIAL, unitsForCountry("gb"))
+        assertEquals(Units.METRIC, unitsForCountry("CA"))
+        assertEquals(Units.METRIC, unitsForCountry(""))
+        assertEquals(Units.METRIC, unitsForCountry(null))
+    }
+
+    @Test
     fun `the fix line says what is known about the fix`() {
         assertEquals(
             FixLine.GoodTo(Distance.Metres(10)),

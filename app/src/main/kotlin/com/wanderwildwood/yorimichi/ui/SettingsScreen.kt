@@ -47,6 +47,10 @@ fun SettingsScreen(
     onUnits: () -> Unit,
 ) {
     var aboutOpen by remember { mutableStateOf(false) }
+    if (aboutOpen) {
+        AboutScreen(onBack = { aboutOpen = false })
+        return
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -91,8 +95,6 @@ fun SettingsScreen(
             )
         }
     }
-
-    if (aboutOpen) AboutDialog(onDismiss = { aboutOpen = false })
 }
 
 @Composable
@@ -104,12 +106,12 @@ private fun Setting(title: String, value: String, onClick: () -> Unit) {
             .padding(vertical = 14.dp),
     ) {
         TextMMD(text = title, style = MaterialTheme.typography.bodyMedium)
-        TextMMD(text = value, style = MaterialTheme.typography.labelSmall)
+        TextMMD(text = value, style = MaterialTheme.typography.bodySmall)
     }
 }
 
 @Composable
-private fun BarButton(
+internal fun BarButton(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     description: String,
     onClick: () -> Unit,

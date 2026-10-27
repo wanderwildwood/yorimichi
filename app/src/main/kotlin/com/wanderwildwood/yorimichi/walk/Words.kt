@@ -107,6 +107,12 @@ fun reading(concentration: Double): Reading = when {
     else -> Reading.Thinner(1.0 / concentration)
 }
 
+/**
+ * The tightest accuracy the screen will claim. A phone can report a fix good to a metre or
+ * less, and "within 0 m" after rounding to tens reads as a promise nothing in the chain keeps.
+ */
+const val MIN_ACCURACY_METRES = 10.0
+
 /** The line under the walk that says what the phone knows about where it is. */
 sealed interface FixLine {
     /** No position at all yet, and the GPS is listening. */
@@ -152,7 +158,7 @@ fun fixLine(
     fix == null -> FixLine.Searching
     fix.ageMillis(now) > FRESH_MILLIS -> FixLine.Stale(age(fix.ageMillis(now)))
     fix.accuracyMetres == Float.MAX_VALUE -> FixLine.UnknownAccuracy
-    else -> FixLine.GoodTo(distance(fix.accuracyMetres.toDouble(), units))
+    else -> FixLine.GoodTo(distance(fix.accuracyMetres.toDouble().coerceAtLeast(MIN_ACCURACY_METRES), units))
 }
 
 /** How old something is, in the largest whole unit that is not zero. */

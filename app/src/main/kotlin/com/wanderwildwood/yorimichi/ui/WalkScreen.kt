@@ -114,7 +114,7 @@ private fun ColumnScope.Asking(onAllow: () -> Unit) {
     Spacer(Modifier.height(12.dp))
     TextMMD(
         text = stringResource(R.string.walk_asking_privacy),
-        style = MaterialTheme.typography.labelSmall,
+        style = MaterialTheme.typography.bodySmall,
         textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(28.dp))
@@ -136,7 +136,7 @@ private fun ColumnScope.Refused(onAppSettings: () -> Unit) {
     Spacer(Modifier.height(12.dp))
     TextMMD(
         text = stringResource(R.string.walk_refused_how),
-        style = MaterialTheme.typography.labelSmall,
+        style = MaterialTheme.typography.bodySmall,
         textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(28.dp))
@@ -168,7 +168,7 @@ private fun ColumnScope.Before(state: WalkState, onGo: () -> Unit, onLocationSet
     Spacer(Modifier.height(10.dp))
     TextMMD(
         text = said(line),
-        style = MaterialTheme.typography.labelSmall,
+        style = MaterialTheme.typography.bodySmall,
         // Bold when there is no fresh position, because then this line is the news.
         fontWeight = if (line is FixLine.GoodTo || line is FixLine.UnknownAccuracy) null else FontWeight.Bold,
         textAlign = TextAlign.Center,
@@ -186,7 +186,7 @@ private fun ColumnScope.Before(state: WalkState, onGo: () -> Unit, onLocationSet
         Spacer(Modifier.height(6.dp))
         TextMMD(
             text = hint,
-            style = MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center,
         )
     }
@@ -242,7 +242,7 @@ private fun ColumnScope.After(
         Arrow(
             bearingDegrees = leg.bearingDegrees,
             headingDegrees = state.heading,
-            modifier = Modifier.size(210.dp),
+            modifier = Modifier.size(150.dp),
         )
 
         Spacer(Modifier.height(14.dp))
@@ -272,7 +272,7 @@ private fun ColumnScope.After(
                 fix == null -> stringResource(R.string.walk_lost_none)
                 else -> stringResource(R.string.walk_lost_old, said(age(fix.ageMillis(state.now))))
             },
-            style = MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
         )
@@ -284,11 +284,18 @@ private fun ColumnScope.After(
     Spacer(Modifier.height(10.dp))
     TextMMD(
         text = said(reading(attractor.concentration)),
-        style = MaterialTheme.typography.labelSmall,
+        style = MaterialTheme.typography.bodySmall,
         textAlign = TextAlign.Center,
     )
 
     Spacer(Modifier.weight(1f))
+
+    TextMMD(
+        text = stringResource(R.string.safety_notice),
+        style = MaterialTheme.typography.bodySmall,
+        textAlign = TextAlign.Center,
+    )
+    Spacer(Modifier.height(10.dp))
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         // Only offered when something on the phone actually answers a map. With no map

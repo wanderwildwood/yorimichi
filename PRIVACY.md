@@ -39,14 +39,14 @@ that is why the coordinate is on the screen for you to write down if you want it
 
 ## What is stored, and where
 
-Three settings and one position, in the app's own private storage:
+Three settings, one notice flag and one position, in the app's own private storage:
 
 ```
-shared_prefs/detour.xml   →   radius, look, units, last_lat, last_lon, last_accuracy, last_time
+shared_prefs/detour.xml   →   radius, look, units, safety_seen, last_lat, last_lon, last_accuracy, last_time
 ```
 
 How far a walk may send you, whether it aims for where the points gather or where they thin
-out, whether distances are said in miles or kilometres, and the last fresh fix with its
+out, whether distances are said in miles or kilometres (until you choose, the phone's country decides), whether the first-run safety notice has been read, and the last fresh fix with its
 accuracy and time. That is all of it. No history, no log of where you have been, no record of
 what it has ever suggested.
 

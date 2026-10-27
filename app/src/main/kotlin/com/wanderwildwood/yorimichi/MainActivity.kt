@@ -9,7 +9,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.mudita.mmd.components.buttons.OutlinedButtonMMD
+import com.mudita.mmd.components.text.TextMMD
+import com.wanderwildwood.yorimichi.ui.EInkDialog
+import com.wanderwildwood.yorimichi.walk.Preferences
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +69,19 @@ private fun Detour(viewModel: WalkViewModel = viewModel()) {
 
     // Coming back from the system settings, where either switch may have been turned.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.resumed() }
+
+    val preferences = remember(context) { Preferences(context) }
+    var safetyOpen by remember { mutableStateOf(!preferences.safetySeen) }
+    if (safetyOpen) {
+        EInkDialog(onDismiss = {}) {
+            TextMMD(text = stringResource(R.string.safety_notice), style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(18.dp))
+            OutlinedButtonMMD(
+                onClick = { preferences.safetySeen = true; safetyOpen = false },
+                modifier = Modifier.fillMaxWidth().height(48.dp),
+            ) { TextMMD(text = stringResource(R.string.safety_ok), style = MaterialTheme.typography.titleSmall) }
+        }
+    }
 
     if (settingsOpen) {
         SettingsScreen(
