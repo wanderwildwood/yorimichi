@@ -29,7 +29,7 @@ import com.mudita.mmd.components.text.TextMMD
 import com.mudita.mmd.components.top_app_bar.TopAppBarMMD
 import com.wanderwildwood.yorimichi.R
 import com.wanderwildwood.yorimichi.core.Coord
-import com.wanderwildwood.yorimichi.walk.ARRIVED_METRES
+import com.wanderwildwood.yorimichi.walk.arrivedWithin
 import com.wanderwildwood.yorimichi.walk.FixLine
 import com.wanderwildwood.yorimichi.walk.Leg
 import com.wanderwildwood.yorimichi.walk.age
@@ -234,7 +234,7 @@ private fun ColumnScope.After(
         )
         Spacer(Modifier.height(8.dp))
         TextMMD(
-            text = stringResource(R.string.walk_arrived_within, said(distance(ARRIVED_METRES, state.units))),
+            text = stringResource(R.string.walk_arrived_within, said(arrivedWithin(state.units))),
             style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center,
         )

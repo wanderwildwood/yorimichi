@@ -47,6 +47,16 @@ fun distance(metres: Double, units: Units): Distance = when (units) {
 }
 
 /**
+ * The distance the arrival line names. The ordinary rounding to ten would call 25 m "30 m",
+ * wider than the circle the app really uses, so this one is written out: 25 m, or 80 ft, which
+ * is a little inside the same circle.
+ */
+fun arrivedWithin(units: Units): Distance = when (units) {
+    Units.IMPERIAL -> Distance.Feet(80)
+    Units.METRIC -> Distance.Metres(ARRIVED_METRES.roundToInt())
+}
+
+/**
  * One decimal place, in Western digits whatever language the phone is in. Every number
  * on the screen has always been written this way, and changing that is its own decision.
  */

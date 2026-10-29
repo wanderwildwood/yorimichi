@@ -19,7 +19,7 @@ already ships with.
 
 ## Where this is up to
 
-Version 0.1.14. The maths is unit tested, every screen has been driven on an emulator, and the
+Version 0.1.15. The maths is unit tested, every screen has been driven on an emulator, and the
 signed release has been installed and exercised.
 
 ## What it does

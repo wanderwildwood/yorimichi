@@ -130,6 +130,13 @@ class WordsTest {
             }
         }
     }
+
+    @Test
+    fun `the arrival line names the circle that is really used`() {
+        assertEquals(Distance.Metres(25), arrivedWithin(Units.METRIC))
+        val feet = arrivedWithin(Units.IMPERIAL) as Distance.Feet
+        assertTrue(feet.feet * 0.3048 <= ARRIVED_METRES)
+    }
 }
 
 /** An invented moment, for the ages above to be measured from. */
