@@ -79,10 +79,12 @@ exactly how the number was picked, which the other claim does not.
 
 ## Permissions
 
-One: `ACCESS_FINE_LOCATION`, to know where to scatter the points around. There is no
-`INTERNET` permission, so nothing can leave the phone even by accident, and nothing about
-where you are or where you were sent is written down. The details, and how to check them
-rather than take them on trust, are in [PRIVACY.md](PRIVACY.md).
+Location, to know where to scatter the points around: `ACCESS_FINE_LOCATION`, asked for
+together with `ACCESS_COARSE_LOCATION` so that Android's precise-or-approximate choice
+works. There is no `INTERNET` permission, so nothing can leave the phone even by accident, and
+where you were sent is not written down; only the last position is kept, one, so the app can
+start indoors. The details, and how to check them rather than take them on trust, are in
+[PRIVACY.md](PRIVACY.md).
 
 ## Ancestors in code
 
