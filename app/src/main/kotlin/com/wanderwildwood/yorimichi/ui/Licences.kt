@@ -146,7 +146,7 @@ private fun Paragraph(text: String) {
 @Composable
 private fun Link(text: String, address: String) {
     val context = LocalContext.current
-    val none = stringResource(R.string.licences_no_browser)
+    val none = stringResource(R.string.about_no_browser_address, address.removePrefix("https://"))
     TextMMD(
         text = text,
         style = MaterialTheme.typography.bodySmall,
@@ -156,8 +156,7 @@ private fun Link(text: String, address: String) {
                 .fillMaxWidth()
                 .heightIn(min = 48.dp)
                 .clickable {
-                    runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(address))) }
-                        .onFailure { Toast.makeText(context, none, Toast.LENGTH_SHORT).show() }
+                    openLink(context, address, none)
                 }
                 .wrapContentHeight(Alignment.CenterVertically),
     )

@@ -7,11 +7,20 @@
          nothing is sent: there is no INTERNET permission here, and the numbers come
          from the device. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- Android 12 offers the choice between precise and approximate and expects both to be asked
+         for together; Detour still needs the precise one and says so if only this is given. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <!-- What this app means to look for on the phone. Without it, asking whether
          anything can open a map quietly answers no from Android 11 onwards, however
          many map apps are installed. -->
     <queries>
+        <!-- Browsers: a web address opens in a real one, never in the system's bare WebView shell. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="geo" />

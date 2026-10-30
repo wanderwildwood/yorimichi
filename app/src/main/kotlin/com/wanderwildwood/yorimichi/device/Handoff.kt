@@ -33,8 +33,9 @@ fun canOpenMap(context: Context): Boolean =
     Intent(Intent.ACTION_VIEW, geoUri(Coord(0.0, 0.0)))
         .resolveActivity(context.packageManager) != null
 
-fun openMap(context: Context, coord: Coord) {
+/** Hands the point to a map app; false when none took it, so the caller can say so. */
+fun openMap(context: Context, coord: Coord): Boolean {
     val intent = Intent(Intent.ACTION_VIEW, geoUri(coord))
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    runCatching { context.startActivity(intent) }
+    return runCatching { context.startActivity(intent) }.isSuccess
 }

@@ -59,7 +59,9 @@ private fun Detour(viewModel: WalkViewModel = viewModel()) {
     val canHandOff = remember(context) { canOpenMap(context) }
 
     val activity = context as ComponentActivity
-    val ask = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+    val ask = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { answers ->
+        // Detour needs the precise one; "approximate" alone is not enough, and is answered like a refusal.
+        val granted = answers[Manifest.permission.ACCESS_FINE_LOCATION] == true
         // Asked straight after a refusal, Android only answers true here when it would
         // still show the dialog. False means it has stopped asking, and the system
         // settings are the only way left.
@@ -96,9 +98,13 @@ private fun Detour(viewModel: WalkViewModel = viewModel()) {
             state = state,
             onGo = viewModel::go,
             onAgain = viewModel::clear,
-            onOpen = { openMap(context, it) },
+            onOpen = {
+                if (!openMap(context, it)) {
+                    android.widget.Toast.makeText(context, context.getString(R.string.walk_no_map), android.widget.Toast.LENGTH_LONG).show()
+                }
+            },
             onSettings = { settingsOpen = true },
-            onAllow = { ask.launch(Manifest.permission.ACCESS_FINE_LOCATION) },
+            onAllow = { ask.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)) },
             onAppSettings = {
                 openSettings(
                     context,

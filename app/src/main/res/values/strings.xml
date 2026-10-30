@@ -14,10 +14,12 @@
     <string name="walk_asking_why">Detour needs to know where you are, to scatter its points around you.</string>
     <string name="walk_asking_privacy">It stays on the phone and is not sent anywhere. The app has no way to reach the network.</string>
     <!-- Button that asks for the location permission (verb) -->
+    <string name="about_no_browser_address">No browser is installed. The address is %1$s.</string>
+    <string name="walk_no_map">There is no map app on this phone to open that point with.</string>
     <string name="walk_allow">Allow</string>
     <!-- When the location permission has been refused and Android will no longer ask -->
     <string name="walk_refused_why">Location is not allowed for Detour, so it cannot tell where you are.</string>
-    <string name="walk_refused_how">Allow it in Detour\'s app settings, under Permissions, then Location.</string>
+    <string name="walk_refused_how">Allow it in Detour\'s app settings, under Permissions, then Location, and choose Use precise location.</string>
     <!-- Button that opens Detour's page in the system settings -->
     <string name="walk_open_app_settings">Open app settings</string>
     <!-- Button that opens the system location settings, shown while location is off -->
