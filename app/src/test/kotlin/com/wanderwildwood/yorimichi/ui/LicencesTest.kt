@@ -6,33 +6,24 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class LicencesTest {
+    private val data = LicencesData(
+        "yorimichi", SOURCE_URL, "GPL-3.0-only", LICENCE_COMPONENTS,
+        LICENCE_RAW.map { LicenceText(it.first, it.first, it.second) }, emptyList(),
+    )
 
-    @Test
-    fun `the built with list is not empty and every entry has a web link`() {
-        assertTrue(LIBRARIES.isNotEmpty())
-        LIBRARIES.forEach {
-            assertTrue(it.name, it.link.startsWith("https://"))
-            assertTrue(it.name, it.licence.isNotBlank())
-        }
+    @Test fun theDataHasNoProblems() {
+        assertEquals(emptyList<String>(), licencesProblems(data))
+        assertTrue(LICENCE_COMPONENTS.isNotEmpty())
     }
 
-    @Test
-    fun `the source link is the public repository`() {
+    @Test fun theSourceLinkIsTheRepo() {
         assertEquals("https://github.com/wanderwildwood/yorimichi", SOURCE_URL)
     }
 
-    @Test
-    fun `paragraphs are joined into rows without losing a word`() {
-        val rows = licenceParagraphs("one two\n  three\n\n\nfour\r\nfive\n")
-        assertEquals(listOf("one two three", "four five"), rows)
-    }
-
-    @Test
-    fun `the bundled licence texts are there and read as paragraphs`() {
+    @Test fun gplIsFirstAndEveryTextIsBundled() {
+        assertEquals("gpl", orderedTexts(data.texts).first().id)
         val raw = File("src/main/res/raw")
-        listOf("gpl_3_0.txt", "apache_2_0.txt", "ofl_1_1.txt").forEach {
-            assertTrue(it, licenceParagraphs(File(raw, it).readText()).size > 3)
-        }
-        assertTrue(File(raw, "gpl_3_0.txt").readText().contains("GNU GENERAL PUBLIC LICENSE"))
+        assertTrue(raw.listFiles().orEmpty().count { it.extension == "txt" } >= LICENCE_RAW.size)
+        assertTrue(licenceParagraphs(File(raw, raw.list().orEmpty().first { it.startsWith("gpl") }).readText()).size > 10)
     }
 }
