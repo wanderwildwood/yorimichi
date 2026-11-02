@@ -47,10 +47,7 @@ fun SettingsScreen(
     onUnits: () -> Unit,
 ) {
     var aboutOpen by remember { mutableStateOf(false) }
-    if (aboutOpen) {
-        AboutScreen(onBack = { aboutOpen = false })
-        return
-    }
+    if (aboutOpen) AboutDialog(onDismiss = { aboutOpen = false })
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
