@@ -15,7 +15,7 @@ android.permission.ACCESS_FINE_LOCATION
 ```
 
 It is used to know where to scatter the app's random points, which is the entire function
-of the app. Coarse location is not enough: a walk can be a few hundred metres and a fix good
+of the app. Coarse location is not enough: a walk can be a few hundred meters and a fix good
 only to a city block would start it somewhere you are not.
 
 There is **no `INTERNET` permission**. Without it Android will not let the app open a network
@@ -46,7 +46,7 @@ shared_prefs/detour.xml   →   radius, look, units, safety_seen, last_lat, last
 ```
 
 How far a walk may send you, whether it aims for where the points gather or where they thin
-out, whether distances are said in miles or kilometres (until you choose, the phone's country decides), whether the first-run safety notice has been read, and the last fresh fix with its
+out, whether distances are said in miles or kilometers (until you choose, the phone's country decides), whether the first-run safety notice has been read, and the last fresh fix with its
 accuracy and time. That is all of it. No history, no log of where you have been, no record of
 what it has ever suggested.
 
@@ -81,6 +81,32 @@ You do not have to take any of it on trust:
 - The source is at <https://github.com/wanderwildwood/yorimichi> and each release is tagged.
 - `grep -r uses-permission app/src/main/AndroidManifest.xml` returns the one line above.
 - Any APK can be checked with `aapt dump permissions` or by opening it as a zip.
+
+<!-- shared-about privacy section -->
+## Who we are
+
+Detour is made by wander wildwood, an independent developer: one person, not a company. wander wildwood is the data controller for anything the app itself handles, and that is very little. Detour keeps what you put in it on your phone and sends nothing to the developer, so the developer holds no data about you.
+
+## How to contact us
+
+Write to email@wanderthe.dev about your data, this policy or anything else. The same address is in the app, under About.
+
+## Your rights
+
+If you are in the EU, the EEA or the UK, the GDPR gives you the right to:
+
+- see the personal data held about you (access)
+- have it corrected (rectification) or deleted (erasure)
+- limit how it is used (restriction)
+- object to its use (objection)
+- get a copy to take elsewhere (portability)
+- withdraw your consent at any time, where something rests on it
+- complain to a data protection supervisory authority, for example the one where you live
+
+Similar laws elsewhere, such as the CCPA in California, give you the right to know, delete and correct, and to opt out of the sale or sharing of your data. Nothing from Detour is sold or shared.
+
+Since Detour keeps what it stores only on your phone, you can exercise most of these rights yourself: clear the app's data in Android's settings, or uninstall the app, which deletes all of it. For anything you cannot do yourself, write to the address above.
+<!-- /shared-about privacy section -->
 
 ## Changes
 
