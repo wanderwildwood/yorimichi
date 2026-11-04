@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -239,11 +241,16 @@ private fun ColumnScope.After(
             textAlign = TextAlign.Center,
         )
     } else {
-        Arrow(
-            bearingDegrees = leg.bearingDegrees,
-            headingDegrees = state.heading,
-            modifier = Modifier.size(150.dp),
-        )
+        // The arrow takes the room that is left, up to 150 dp, so the notice and both buttons
+        // always fit on the Kompakt's 800 px screen with 16 sp text (and with the lost-position
+        // line on top); with room to spare it is the full 150 dp, centered in that room.
+        Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Arrow(
+                bearingDegrees = leg.bearingDegrees,
+                headingDegrees = state.heading,
+                modifier = Modifier.sizeIn(maxWidth = 150.dp, maxHeight = 150.dp).aspectRatio(1f),
+            )
+        }
 
         Spacer(Modifier.height(14.dp))
         TextMMD(
@@ -288,7 +295,8 @@ private fun ColumnScope.After(
         textAlign = TextAlign.Center,
     )
 
-    Spacer(Modifier.weight(1f))
+    // Arrived: no arrow, so this gap is the flexible one; otherwise the arrow above is.
+    if (leg.arrived) Spacer(Modifier.weight(1f)) else Spacer(Modifier.height(10.dp))
 
     TextMMD(
         text = stringResource(R.string.safety_notice),
