@@ -143,7 +143,7 @@
     <!-- Setting row: the units distances are shown in, and its two values -->
     <string name="settings_distances">Distances</string>
     <string name="settings_units_imperial">Miles and feet</string>
-    <string name="settings_units_metric">Kilometres and metres</string>
+    <string name="settings_units_metric">Kilometers and meters</string>
 
     <!-- ============================================================ -->
     <!-- About: three pages. Keep the names of the app, projects and licences as they are -->
@@ -169,14 +169,14 @@
     <string name="safety_ok">Understood</string>
 
     <!-- Licences page, reached from About -->
-    <string name="licences_title">Licences</string>
+    <string name="licences_title">Licenses</string>
     <string name="licences_source_head">Source code</string>
-    <string name="licences_no_text">%s needs no licence text here.</string>
+    <string name="licences_no_text">%s needs no license text here.</string>
     <string name="licences_source">Source: %1$s</string>
     <string name="licences_licence">Detour is free software under the GNU General Public License, version 3 only. Copyright wander wildwood.</string>
     <string name="licences_back">Back</string>
     <string name="licences_full_head">Full texts</string>
     <string name="licences_full_gpl">GNU General Public License v3 (full text)</string>
     <string name="licences_full_apache">Apache License 2.0 (full text)</string>
-    <string name="licences_full_ofl">SIL Open Font Licence 1.1 (full text)</string>
+    <string name="licences_full_ofl">SIL Open Font License 1.1 (full text)</string>
 </resources>
