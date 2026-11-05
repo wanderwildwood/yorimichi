@@ -6,16 +6,19 @@ way to send anything anywhere.
 That is the whole policy. The rest of this page is the evidence for it, because a privacy
 policy that cannot be checked is just a promise.
 
-## One permission
+## One kind of permission: location
 
-`app/src/main/AndroidManifest.xml` declares exactly one:
+`app/src/main/AndroidManifest.xml` declares two, both for location:
 
 ```
 android.permission.ACCESS_FINE_LOCATION
+android.permission.ACCESS_COARSE_LOCATION
 ```
 
-It is used to know where to scatter the app's random points, which is the entire function
-of the app. Coarse location is not enough: a walk can be a few hundred meters and a fix good
+The precise one is used to know where to scatter the app's random points, which is the entire
+function of the app. Android 12 and later expect the approximate one to be asked for alongside
+it, so the phone can offer you the choice; Detour still needs the precise one and says so if
+only the approximate one is given. Coarse location is not enough: a walk can be a few hundred meters and a fix good
 only to a city block would start it somewhere you are not.
 
 There is **no `INTERNET` permission**. Without it Android will not let the app open a network
@@ -79,13 +82,13 @@ fetches its randomness, and fetching it tells the server where you are about to 
 You do not have to take any of it on trust:
 
 - The source is at <https://github.com/wanderwildwood/yorimichi> and each release is tagged.
-- `grep -r uses-permission app/src/main/AndroidManifest.xml` returns the one line above.
+- `grep -r uses-permission app/src/main/AndroidManifest.xml` returns the two lines above.
 - Any APK can be checked with `aapt dump permissions` or by opening it as a zip.
 
 <!-- shared-about privacy section -->
 ## Who we are
 
-Detour is made by wander wildwood, an independent developer: one person, not a company. wander wildwood is the data controller for anything the app itself handles, and that is very little. Detour keeps what you put in it on your phone and sends nothing to the developer, so the developer holds no data about you.
+Detour is made by wander wildwood, an independent developer: one person, not a company. wander wildwood is the data controller for anything the app itself handles, and that is very little. What you put in Detour stays on your phone. The app has no internet access, so it makes no requests of any kind; the only thing that ever leaves it is a destination you choose to hand to your map app. The developer receives nothing, so holds no data about you.
 
 ## How to contact us
 
