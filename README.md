@@ -19,7 +19,7 @@ already ships with.
 
 ## Where this is up to
 
-Version 0.1.18. The maths is unit tested, every screen has been driven on an emulator, and the
+Version 0.1.18. The math is unit tested, every screen has been driven on an emulator, and the
 signed release has been installed and exercised.
 
 ## What it does
@@ -28,7 +28,7 @@ signed release has been installed and exercised.
   fell across it, and sends you to the thickest patch — or the thinnest, if you would rather
   have the empty part.
 - Draws an arrow, a distance and the coordinate, and nothing else. **There is no map in this
-  app and there will not be one.** A greyscale basemap that pans and zooms is the worst thing
+  app and there will not be one.** A grayscale basemap that pans and zooms is the worst thing
   this panel can be asked to draw, and the phone already has an offline map that does it
   properly. The coordinate is handed to that one with a `geo:` intent.
 - Says how thick the patch actually was, against what an even scatter would have given. Most
@@ -60,7 +60,7 @@ So this is a score generator, not an instrument. It writes you a one-line instru
 that same shape — *go to 35.88498, −82.81982* — and the walk is the work.
 
 Which is also why it does not dress up the answer. The 1921 excursion was a washout:
-rain, fifty-odd people, the promised band never arrived, the auction was cancelled and
+rain, fifty-odd people, the promised band never arrived, the auction was canceled and
 the onlookers drifted off. Everyone involved thought it a failure and it is now
 considered the first work of walking art. A hundred years of this practice already know
 the outing is usually a let-down, and say so. An app that promised you otherwise would be
@@ -99,7 +99,7 @@ Three earlier projects implement the same idea, and this one owes them the metho
   comes from.
 
 None of their code is in here. Three things are done differently: the scatter and the
-density estimate happen in metres rather than degrees, because a kernel that is round in
+density estimate happen in meters rather than degrees, because a kernel that is round in
 degrees is an ellipse on the ground; the Gaussian kernel is separated per axis, which is one
 exponential per cell per axis instead of one per pair; and the answer carries a measure of
 how concentrated it really was.
@@ -113,7 +113,7 @@ Issues and pull requests are welcome. The things that would help most, roughly i
 - **Other devices.** This is built for one phone's screen, 4.3" and monochrome. It should run
   on any Android 12 or later, but it has never been seen on anything else.
 - **The honest-number problem.** `concentration` compares the local density to the disc's
-  average using the tenth nearest neighbour. That is a defensible choice rather than the only
+  average using the tenth nearest neighbor. That is a defensible choice rather than the only
   one, and if you know a better statistic for "is this cluster actually anything", say so.
 
 Two things this app will not take, so nobody wastes an afternoon on them: a map drawn inside
@@ -130,7 +130,7 @@ For updates without doing this by hand, add this repository to
 
     https://github.com/wanderwildwood/yorimichi
 
-## Licence
+## License
 
 GNU General Public License v3.0 only. Copyright wander wildwood.
 
