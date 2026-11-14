@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mudita.mmd.components.text.TextMMD
@@ -46,6 +47,7 @@ fun SettingsScreen(
     onLook: () -> Unit,
     onUnits: () -> Unit,
 ) {
+    val context = LocalContext.current
     var aboutOpen by remember { mutableStateOf(false) }
     if (aboutOpen) AboutDialog(onDismiss = { aboutOpen = false })
 
@@ -89,6 +91,11 @@ fun SettingsScreen(
                     Units.METRIC -> stringResource(R.string.settings_units_metric)
                 },
                 onClick = onUnits,
+            )
+            Setting(
+                title = stringResource(R.string.settings_dark),
+                value = stringResource(if (DarkMode.on) R.string.settings_dark_on else R.string.settings_dark_off),
+                onClick = { DarkMode.set(context, !DarkMode.on) },
             )
         }
     }
