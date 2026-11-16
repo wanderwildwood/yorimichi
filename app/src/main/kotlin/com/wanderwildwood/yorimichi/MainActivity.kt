@@ -38,14 +38,15 @@ import com.wanderwildwood.yorimichi.ui.SettingsScreen
 import com.wanderwildwood.yorimichi.ui.WalkScreen
 import com.wanderwildwood.yorimichi.ui.monochrome
 import com.wanderwildwood.yorimichi.walk.WalkViewModel
+import com.wanderwildwood.yorimichi.ui.DarkSelection
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ThemeMMD(colorScheme = monochrome, typography = houseTypography) {
+            ThemeMMD(colorScheme = monochrome, typography = houseTypography) { DarkSelection {
                 Detour()
-            }
+            } }
         }
     }
 }
