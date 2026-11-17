@@ -18,7 +18,7 @@ import kotlin.math.sin
  *
  * Solid black, filled rather than outlined, and large: it is the one thing on the
  * screen that is looked at while walking, often at arm's length in the sun. A hollow
- * arrowhead at this size on sixteen greys reads as a smudge.
+ * arrowhead at this size on sixteen grays reads as a smudge.
  *
  * With no compass to ask, the ring is drawn as a map is — north up — and the needle
  * points at the bearing from north. That is still a usable instruction, and it is
@@ -69,7 +69,7 @@ private fun point(middle: Offset, distance: Float, degrees: Double): Offset {
  * between them. The notch is what makes it read as an arrow rather than a triangle at a
  * glance.
  *
- * Laid out along and across the needle rather than as angles from the centre, because
+ * Laid out along and across the needle rather than as angles from the center, because
  * the thing being tuned is how slim it is, and a half-width in [across] is a number that
  * says that. Four and a half times as long as it is wide.
  */

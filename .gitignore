@@ -4,5 +4,6 @@
 build/
 local.properties
 
-signing/signing.properties
-signing/signing.keystore
+# Everything in signing/ but its own .gitignore
+signing/*
+!signing/.gitignore

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Where you are, to scatter the points around. Coarse is not enough: the walk
-         can be a few hundred metres, and a fix good to a city block would put the
+         can be a few hundred meters, and a fix good to a city block would put the
          start somewhere you are not. Only the last fix is kept, on the phone, and
          nothing is sent: there is no INTERNET permission here, and the numbers come
          from the device. -->

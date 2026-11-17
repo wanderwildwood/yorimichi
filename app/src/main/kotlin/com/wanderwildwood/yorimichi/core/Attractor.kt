@@ -67,7 +67,7 @@ const val GRID: Int = 100
  * Scatter [pointCount] points inside [radiusMetres] of [origin], estimate their
  * density, and return the cell [selector] asks for.
  *
- * Everything between the scatter and the answer happens in metres east and north of
+ * Everything between the scatter and the answer happens in meters east and north of
  * [origin] rather than in degrees. Degrees are not square — a degree of longitude is
  * shorter than a degree of latitude everywhere but the equator — so a kernel that is
  * round in degrees is an ellipse on the ground, and the distortion grows with
@@ -225,16 +225,16 @@ private fun concentration(
     return (k * radiusMetres * radiusMetres) / (n * kth)
 }
 
-/** How many neighbours the local density is measured over. */
+/** How many neighbors the local density is measured over. */
 private const val NEIGHBOURS = 10
 
 /**
- * [pointCount] points spread evenly over the disc of [radiusMetres], as metres east
- * and north of its centre.
+ * [pointCount] points spread evenly over the disc of [radiusMetres], as meters east
+ * and north of its center.
  *
  * Evenly over the *area*, which is what needs the square root. Drawing the radius
  * straight from a uniform number piles the points up in the middle, because a ring far
- * out holds more ground than a ring near the centre and has to be given proportionally
+ * out holds more ground than a ring near the center and has to be given proportionally
  * more of them. Getting this wrong produces an app that still works, still returns a
  * point, and is quietly biased towards your own doorstep — which is the one thing it
  * exists not to do.
@@ -259,7 +259,7 @@ internal fun scatter(
 private const val EVEN_POINTS = 1024
 
 /**
- * [count] points laid evenly over the disc of [radiusMetres] by rule, as metres east and
+ * [count] points laid evenly over the disc of [radiusMetres] by rule, as meters east and
  * north: a sunflower spiral, each a golden angle round from the last and out by the square
  * root, so equal areas hold equal numbers of points with no clumps and no gaps.
  */

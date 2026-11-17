@@ -16,14 +16,14 @@ data class Coord(val lat: Double, val lon: Double)
  */
 const val METRES_PER_DEGREE: Double = 6_371_000.0 * 2.0 * PI / 360.0
 
-/** The point [east] metres east and [north] metres north of this one. */
+/** The point [east] meters east and [north] meters north of this one. */
 fun Coord.offset(east: Double, north: Double): Coord {
     val latitude = lat + north / METRES_PER_DEGREE
     val longitude = lon + east / (METRES_PER_DEGREE * cos(lat * PI / 180.0))
     return Coord(latitude, longitude)
 }
 
-/** Great-circle distance in metres. */
+/** Great-circle distance in meters. */
 fun Coord.distanceTo(other: Coord): Double {
     val phi1 = lat * PI / 180.0
     val phi2 = other.lat * PI / 180.0

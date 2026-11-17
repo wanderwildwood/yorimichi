@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import com.wanderwildwood.yorimichi.core.Coord
 import java.util.Locale
+import com.wanderwildwood.yorimichi.R
 
 /**
  * Handing the point to whatever draws maps on this phone.
@@ -14,12 +15,12 @@ import java.util.Locale
  * to a point, and by c:geo. Either of them draws a better map than this app could, on a
  * panel that would rather not be asked to draw one at all.
  */
-fun geoUri(coord: Coord): Uri {
+fun geoUri(coord: Coord, label: String = "Detour"): Uri {
     // Formatted in the US locale on purpose. A locale that writes decimals with a comma
     // turns "35.681,139.767" into "35,681,139,767", which every map app reads as
     // nonsense and none of them complain about.
     val point = String.format(Locale.US, "%.6f,%.6f", coord.lat, coord.lon)
-    return Uri.parse("geo:0,0?q=$point(${Uri.encode("Detour")})")
+    return Uri.parse("geo:0,0?q=$point(${Uri.encode(label)})")
 }
 
 /**
@@ -35,7 +36,8 @@ fun canOpenMap(context: Context): Boolean =
 
 /** Hands the point to a map app; false when none took it, so the caller can say so. */
 fun openMap(context: Context, coord: Coord): Boolean {
-    val intent = Intent(Intent.ACTION_VIEW, geoUri(coord))
+    // The pin is labeled with the app's name, as the launcher shows it.
+    val intent = Intent(Intent.ACTION_VIEW, geoUri(coord, context.getString(R.string.app_name)))
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     return runCatching { context.startActivity(intent) }.isSuccess
 }
