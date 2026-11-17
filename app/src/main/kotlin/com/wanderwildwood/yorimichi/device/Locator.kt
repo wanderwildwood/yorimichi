@@ -24,6 +24,8 @@ data class Fix(
     val accuracyMetres: Float,
     /** When the fix was taken, by the wall clock, so that it still means something after a restart. */
     val timeMillis: Long,
+    /** From the GPS itself, not the phone's network location. */
+    val gps: Boolean = false,
 ) {
     fun ageMillis(now: Long): Long = (now - timeMillis).coerceAtLeast(0)
 }
@@ -64,14 +66,15 @@ private fun Location.toFix(): Fix {
         coord = Coord(latitude, longitude),
         accuracyMetres = if (hasAccuracy()) accuracy else Float.MAX_VALUE,
         timeMillis = System.currentTimeMillis() - age.coerceAtLeast(0),
+        gps = provider == LocationManager.GPS_PROVIDER,
     )
 }
 
 /**
  * The newest position any provider on the phone still remembers, however old.
  *
- * Every provider is asked, not just the GPS: only the GPS is listened to for a fresh fix
- * (see [fixes]), but a position the phone already holds costs nothing to read, and a
+ * Every provider is asked, not just the GPS: only the GPS and the network location are
+ * listened to for a fresh fix (see [fixes]), but a position the phone already holds costs nothing to read, and a
  * stale one shown with its age is far better than a screen that waits. The age is always
  * said, so a walk is never scattered around somewhere the phone was yesterday without the
  * screen saying so.

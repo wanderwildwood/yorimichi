@@ -11,7 +11,7 @@ import org.junit.Test
 
 class ProgressTest {
     private val point = Coord(10.0, 20.0)
-    private fun fix(c: Coord, t: Long = 1_000_000L, acc: Float = 8f) = Fix(c, acc, t)
+    private fun fix(c: Coord, t: Long = 1_000_000L, acc: Float = 8f, gps: Boolean = false) = Fix(c, acc, t, gps)
 
     @Test
     fun `the distance shrinks as the walker closes in and the bearing stays on the point`() {
@@ -57,10 +57,18 @@ class ProgressTest {
 
     @Test
     fun `a coarse network fix does not displace a good gps fix unless the gps has gone quiet`() {
-        val gps = fix(point, t = 100_000, acc = 6f)
+        val gps = fix(point, t = 100_000, acc = 6f, gps = true)
         assertFalse(accept(gps, fix(point, t = 103_000, acc = 900f)))
         assertTrue(accept(gps, fix(point, t = 100_000 + QUIET_GPS_MILLIS, acc = 900f)))
         assertTrue(accept(gps, fix(point, t = 103_000, acc = 5f)))
+    }
+
+    @Test
+    fun `a newer gps fix is taken even when it is a little less sure`() {
+        val held = fix(point, t = 100_000, acc = 6f, gps = true)
+        assertTrue(accept(held, fix(point, t = 101_000, acc = 9f, gps = true)))
+        // A precise fix remembered from earlier does not hold off the live GPS either.
+        assertTrue(accept(fix(point, t = 100_000, acc = 3f), fix(point, t = 101_000, acc = 12f, gps = true)))
     }
 
     @Test

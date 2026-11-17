@@ -40,11 +40,13 @@ fun staleWhileWalking(fix: Fix?, now: Long): Boolean =
 
 /**
  * Whether [incoming] should replace [current]. Several providers report at once and a
- * coarse network position must not drag the arrow back from a good GPS one.
+ * coarse network position must not drag the arrow back from a good GPS one. A newer fix from
+ * the GPS always does, even a little less sure than the last: that is the walker moving.
  */
 fun accept(current: Fix?, incoming: Fix): Boolean = when {
     current == null -> true
     incoming.timeMillis < current.timeMillis -> false
+    incoming.gps || !current.gps -> true
     incoming.accuracyMetres <= current.accuracyMetres -> true
     else -> incoming.timeMillis - current.timeMillis >= QUIET_GPS_MILLIS
 }

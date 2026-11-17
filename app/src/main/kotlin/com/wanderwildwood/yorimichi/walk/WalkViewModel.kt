@@ -142,8 +142,12 @@ class WalkViewModel(application: Application) : AndroidViewModel(application) {
         // Something to start from at once, before the sky has been asked anything: the
         // newest of whatever the phone still remembers and what this app wrote down last
         // time. The screen says how old it is.
-        val remembered = listOfNotNull(lastKnown(app), preferences.lastFix).maxByOrNull { it.timeMillis }
+        // One stamped later than now (a clock set back since) would read as fresh and hold off
+        // every live fix, so it is left out.
         val now = System.currentTimeMillis()
+        val remembered = listOfNotNull(lastKnown(app), preferences.lastFix)
+            .filter { it.timeMillis <= now }
+            .maxByOrNull { it.timeMillis }
         _state.update {
             it.copy(
                 fix = remembered,
