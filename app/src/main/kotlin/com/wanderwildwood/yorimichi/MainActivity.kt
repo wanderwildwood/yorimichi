@@ -6,7 +6,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
@@ -55,12 +57,17 @@ class MainActivity : ComponentActivity() {
 private fun Detour(viewModel: WalkViewModel = viewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    var settingsOpen by remember { mutableStateOf(false) }
+    var settingsOpen by rememberSaveable { mutableStateOf(false) }
+    // Back from Settings goes back to the walk, not out of the app.
+    BackHandler(enabled = settingsOpen) { settingsOpen = false }
     // Asked once. Installing a map app while this screen is open is not a case worth
     // watching for.
     val canHandOff = remember(context) { canOpenMap(context) }
 
     val activity = context as ComponentActivity
+    // What Android said before the question, and when it was asked: told apart, a dialog closed
+    // with Back and a refusal Android gives at once without asking read differently.
+    val asked = remember { longArrayOf(0L, 0L) }
     val ask = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { answers ->
         // Detour needs the precise one; "approximate" alone is not enough, and is answered like a refusal.
         val granted = answers[Manifest.permission.ACCESS_FINE_LOCATION] == true
@@ -68,7 +75,11 @@ private fun Detour(viewModel: WalkViewModel = viewModel()) {
         // still show the dialog. False means it has stopped asking, and the system
         // settings are the only way left.
         val canAskAgain = activity.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)
-        viewModel.permissionAnswered(granted, canAskAgain)
+        // Refused for good only when Android stopped asking just now (it would have before),
+        // or answered at once with no dialog at all. A dialog closed with Back is neither.
+        val wouldBefore = asked[0] == 1L
+        val atOnce = android.os.SystemClock.elapsedRealtime() - asked[1] < 300
+        viewModel.permissionAnswered(granted, canAskAgain || !(wouldBefore || atOnce))
     }
 
     // Coming back from the system settings, where either switch may have been turned.
@@ -106,7 +117,11 @@ private fun Detour(viewModel: WalkViewModel = viewModel()) {
                 }
             },
             onSettings = { settingsOpen = true },
-            onAllow = { ask.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)) },
+            onAllow = {
+                asked[0] = if (activity.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) 1L else 0L
+                asked[1] = android.os.SystemClock.elapsedRealtime()
+                ask.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+            },
             onAppSettings = {
                 openSettings(
                     context,
