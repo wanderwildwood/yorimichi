@@ -27,7 +27,8 @@ is load-bearing.
 
 ## What happens to your position
 
-It is read from the GPS and used to work out one destination. One copy of it is kept: the
+It is read from the GPS, and from the phone's own network location where the phone has one,
+and used to work out one destination. One copy of it is kept: the
 last fresh fix, written to the app's private preferences at most once a minute and overwritten
 each time, so that the next time the app opens indoors, where the GPS may not find the sky, it
 can start from where the phone last was and say how long ago that was. There is never more
@@ -42,15 +43,17 @@ that is why the coordinate is on the screen for you to write down if you want it
 
 ## What is stored, and where
 
-Three settings, one notice flag and one position, in the app's own private storage:
+Four settings, one notice flag and one position, in the app's own private storage:
 
 ```
-shared_prefs/detour.xml   →   radius, look, units, safety_seen, last_lat, last_lon, last_accuracy, last_time
+shared_prefs/detour.xml      →   radius, look, units, safety_seen, last_lat, last_lon, last_accuracy, last_time
+shared_prefs/dark_mode.xml   →   on, own, home_dark, home_stamp
 ```
 
 How far a walk may send you, whether it aims for where the points gather or where they thin
-out, whether distances are said in miles or kilometers (until you choose, the phone's country decides), whether the first-run safety notice has been read, and the last fresh fix with its
-accuracy and time. That is all of it. No history, no log of where you have been, no record of
+out, whether distances are said in miles or kilometers (until you choose, the phone's country decides), whether the first-run safety notice has been read, the last fresh fix with its
+accuracy and time, and whether dark mode is on (and whether that was your own choice or
+Home's, when Home is installed; the app asks Home only that). That is all of it. No history, no log of where you have been, no record of
 what it has ever suggested.
 
 `android:allowBackup="false"` is set, so not even that goes to a cloud backup.

@@ -19,8 +19,8 @@ already ships with.
 
 ## Where this is up to
 
-Version 0.1.18. The math is unit tested, every screen has been driven on an emulator, and the
-signed release has been installed and exercised.
+The math is unit tested, every screen has been driven on an emulator, and the signed release
+has been installed and exercised.
 
 ## What it does
 
@@ -57,7 +57,7 @@ and called it the dérive; La Monte Young wrote the whole of *Composition 1960 #
 walk from a to b".
 
 So this is a score generator, not an instrument. It writes you a one-line instruction of
-that same shape — *go to 35.88498, −82.81982* — and the walk is the work.
+that same shape — *go to 51.47790, −0.00150* — and the walk is the work.
 
 Which is also why it does not dress up the answer. The 1921 excursion was a washout:
 rain, fifty-odd people, the promised band never arrived, the auction was canceled and
@@ -106,12 +106,8 @@ how concentrated it really was.
 
 ## Contributing
 
-Issues and pull requests are welcome. The things that would help most, roughly in order:
+Issues and pull requests are welcome. One open question in particular:
 
-- **Reports from actual walks** — where, how far, whether the arrow was followable, whether
-  the fix was any good under cover.
-- **Other devices.** This is built for one phone's screen, 4.3" and monochrome. It should run
-  on any Android 12 or later, but it has never been seen on anything else.
 - **The honest-number problem.** `concentration` compares the local density to the disc's
   average using the tenth nearest neighbor. That is a defensible choice rather than the only
   one, and if you know a better statistic for "is this cluster actually anything", say so.
