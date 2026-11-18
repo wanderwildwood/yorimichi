@@ -10,6 +10,12 @@ import kotlin.math.roundToInt
 const val ARRIVED_METRES = 25.0
 
 /**
+ * A position less sure than this cannot say the walk is over: a network fix good to a few
+ * hundred meters can land on the point by chance while the walker is still far off.
+ */
+const val ARRIVED_ACCURACY_METRES = 2 * ARRIVED_METRES
+
+/**
  * A position older than this, while walking, is no longer where the phone is. A walker
  * covers well over a hundred metres in it, so the distance shown can no longer be trusted
  * and the screen says so instead of holding the last number.

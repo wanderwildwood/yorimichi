@@ -51,12 +51,18 @@ data class WalkState(
     val look: Look = Look.GATHER,
     val units: Units = Units.IMPERIAL,
 ) {
-    /** From where the phone is now to the point, or null with no walk or no position. */
+    /**
+     * From where the phone is now to the point, or null with no walk or no position. Arrived only
+     * on a live position sure enough to tell: an old or coarse one shows the arrow and the distance,
+     * with the lost line under them.
+     */
     val leg: Leg?
         get() {
             val f = fix ?: return null
             val a = attractor ?: return null
-            return leg(f.coord, a.point)
+            val leg = leg(f.coord, a.point)
+            val sure = !positionLost && f.accuracyMetres <= ARRIVED_ACCURACY_METRES
+            return if (leg.arrived && !sure) leg.copy(arrived = false) else leg
         }
 
     /** The position is too old to follow, or location is off: the distance is not live. */

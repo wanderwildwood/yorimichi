@@ -74,12 +74,26 @@ class ProgressTest {
     @Test
     fun `the state follows the fix and has no leg without a walk or a position`() {
         val attractor = com.wanderwildwood.yorimichi.core.Attractor(point, 500.0, 0.0, 0.0, 1.0, 1, 2000.0)
-        val far = WalkState(fix = fix(point.offset(0.0, -500.0)), attractor = attractor)
+        val far = WalkState(fix = fix(point.offset(0.0, -500.0)), attractor = attractor, now = 1_000_000L)
         assertEquals(500.0, far.leg!!.distanceMetres, 2.0)
         val near = far.copy(fix = fix(point.offset(0.0, -10.0)))
         assertTrue(near.leg!!.arrived)
         assertNull(far.copy(attractor = null).leg)
         assertNull(far.copy(fix = null).leg)
+    }
+
+    @Test
+    fun `arrived only on a live position sure enough to tell`() {
+        val attractor = com.wanderwildwood.yorimichi.core.Attractor(point, 500.0, 0.0, 0.0, 1.0, 1, 2000.0)
+        val here = WalkState(fix = fix(point.offset(0.0, -10.0), t = 0), attractor = attractor, now = 10_000)
+        assertTrue(here.leg!!.arrived)
+        // A coarse network fix that happens to land on the point.
+        val coarse = here.copy(fix = fix(point.offset(0.0, -10.0), t = 0, acc = 400f))
+        assertFalse(coarse.leg!!.arrived)
+        assertEquals(10.0, coarse.leg!!.distanceMetres, 1.0)
+        // The position is lost: old, or location switched off.
+        assertFalse(here.copy(now = 90_000).leg!!.arrived)
+        assertFalse(here.copy(locationOn = false).leg!!.arrived)
     }
 
     @Test
