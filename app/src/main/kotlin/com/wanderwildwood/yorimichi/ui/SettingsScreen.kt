@@ -3,10 +3,9 @@ package com.wanderwildwood.yorimichi.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,10 +31,10 @@ import com.wanderwildwood.yorimichi.walk.WalkState
 import com.wanderwildwood.yorimichi.walk.radii
 
 /**
- * The three things there are to set.
+ * The four things there are to set.
  *
  * Each row says what it is set to and nothing else, and a press moves it on to the next
- * value. Three settings do not want a screen each, and a picker is two full repaints to
+ * value. Four settings do not want a screen each, and a picker is two full repaints to
  * choose between five things that fit on the row already.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,38 +64,47 @@ fun SettingsScreen(
             )
         },
     ) { contentPadding ->
-        Column(
+        val walk = radii(state.units).firstOrNull { it.metres == state.radiusMetres }
+        // The house list, so that a setting more, or larger text, pages on with the scrollbar
+        // instead of falling off the foot of the screen. Its side padding is on the rows, so the
+        // bar sits at the screen's edge.
+        PagedColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(contentPadding)
-                .padding(horizontal = 20.dp),
+                .padding(contentPadding),
+            contentPadding = PaddingValues(start = 20.dp, top = 12.dp, end = 12.dp),
         ) {
-            Spacer(Modifier.height(12.dp))
-
-            val walk = radii(state.units).firstOrNull { it.metres == state.radiusMetres }
-            Setting(
-                title = stringResource(R.string.settings_radius),
-                value = said(walk?.label ?: RadiusLabel.Metres(state.radiusMetres)),
-                onClick = onRadius,
-            )
-            Setting(
-                title = stringResource(R.string.settings_look_for),
-                value = where(state.look).replaceFirstChar { it.uppercase() },
-                onClick = onLook,
-            )
-            Setting(
-                title = stringResource(R.string.settings_distances),
-                value = when (state.units) {
-                    Units.IMPERIAL -> stringResource(R.string.settings_units_imperial)
-                    Units.METRIC -> stringResource(R.string.settings_units_metric)
-                },
-                onClick = onUnits,
-            )
-            Setting(
-                title = stringResource(R.string.settings_dark),
-                value = stringResource(if (DarkMode.on) R.string.settings_dark_on else R.string.settings_dark_off),
-                onClick = { DarkMode.set(context, !DarkMode.on) },
-            )
+            item(key = "radius") {
+                Setting(
+                    title = stringResource(R.string.settings_radius),
+                    value = said(walk?.label ?: RadiusLabel.Metres(state.radiusMetres)),
+                    onClick = onRadius,
+                )
+            }
+            item(key = "look") {
+                Setting(
+                    title = stringResource(R.string.settings_look_for),
+                    value = where(state.look).replaceFirstChar { it.uppercase() },
+                    onClick = onLook,
+                )
+            }
+            item(key = "units") {
+                Setting(
+                    title = stringResource(R.string.settings_distances),
+                    value = when (state.units) {
+                        Units.IMPERIAL -> stringResource(R.string.settings_units_imperial)
+                        Units.METRIC -> stringResource(R.string.settings_units_metric)
+                    },
+                    onClick = onUnits,
+                )
+            }
+            item(key = "dark") {
+                Setting(
+                    title = stringResource(R.string.settings_dark),
+                    value = stringResource(if (DarkMode.on) R.string.settings_dark_on else R.string.settings_dark_off),
+                    onClick = { DarkMode.set(context, !DarkMode.on) },
+                )
+            }
         }
     }
 }
