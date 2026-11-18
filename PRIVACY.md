@@ -38,8 +38,10 @@ uninstalling it, removes it.
 When the GPS has no fresh fix the app also reads the position the phone itself last
 remembered (Android's "last known location"), which never leaves the phone either.
 
-The destination is not stored either. Close the app and the walk it gave you is forgotten;
-that is why the coordinate is on the screen for you to write down if you want it.
+The destination is not stored either. While the app is open it is held only in Android's
+saved state for the app, so a walk survives the phone stopping the app in the background; it is
+never written to the app's storage. Close the app and the walk it gave you is forgotten; that is
+why the coordinate is on the screen for you to write down if you want it.
 
 ## What is stored, and where
 

@@ -2,8 +2,10 @@ package com.wanderwildwood.yorimichi.walk
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.wanderwildwood.yorimichi.core.Attractor
+import com.wanderwildwood.yorimichi.core.Coord
 import com.wanderwildwood.yorimichi.core.Selector
 import com.wanderwildwood.yorimichi.core.generate
 import com.wanderwildwood.yorimichi.device.FRESH_MILLIS
@@ -80,7 +82,36 @@ private const val TICK_MILLIS = 30_000L
 /** How often a fresh fix is written down. It changes every second while walking. */
 private const val SAVE_EVERY_MILLIS = 60_000L
 
-class WalkViewModel(application: Application) : AndroidViewModel(application) {
+/** The key the walk's destination is kept under in the saved state. */
+private const val WALK_KEY = "walk"
+
+/**
+ * The walk as plain numbers for the saved state, which Android keeps across the process being
+ * stopped behind the app's back and drops when the task is closed. Nothing is written to disk.
+ */
+internal fun Attractor.toSaved(): DoubleArray = doubleArrayOf(
+    point.lat, point.lon, distanceMetres, bearingDegrees, density, concentration,
+    points.toDouble(), radiusMetres,
+)
+
+/** The walk back from [toSaved], or null for anything that is not one. */
+internal fun attractorFromSaved(saved: DoubleArray?): Attractor? {
+    if (saved == null || saved.size != 8 || saved.any { it.isNaN() }) return null
+    return Attractor(
+        point = Coord(saved[0], saved[1]),
+        distanceMetres = saved[2],
+        bearingDegrees = saved[3],
+        density = saved[4],
+        concentration = saved[5],
+        points = saved[6].toInt(),
+        radiusMetres = saved[7],
+    )
+}
+
+class WalkViewModel(
+    application: Application,
+    private val saved: SavedStateHandle,
+) : AndroidViewModel(application) {
 
     private val preferences = Preferences(application)
 
@@ -95,6 +126,8 @@ class WalkViewModel(application: Application) : AndroidViewModel(application) {
             radiusMetres = nearestRadius(preferences.radiusMetres, preferences.units).metres,
             look = preferences.look,
             units = preferences.units,
+            // A walk under way when Android stopped the app in the background is still there.
+            attractor = attractorFromSaved(saved.get<DoubleArray>(WALK_KEY)),
         )
     )
     val state = _state.asStateFlow()
@@ -229,11 +262,15 @@ class WalkViewModel(application: Application) : AndroidViewModel(application) {
             selector = selector,
             random = random,
         )
+        saved[WALK_KEY] = attractor.toSaved()
         _state.update { it.copy(attractor = attractor) }
     }
 
     /** Put the walk away and go back to the button. */
-    fun clear() = _state.update { it.copy(attractor = null) }
+    fun clear() {
+        saved.remove<DoubleArray>(WALK_KEY)
+        _state.update { it.copy(attractor = null) }
+    }
 
     fun nextRadius() {
         val offered = radii(_state.value.units)
