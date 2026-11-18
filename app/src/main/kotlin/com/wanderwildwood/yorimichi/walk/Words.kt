@@ -15,7 +15,7 @@ private const val METRES_PER_FOOT = 0.3048
  * A distance in the units it is said in, rounded to what is worth saying. The screen
  * puts the words to it.
  *
- * Short distances are whole tens of feet or metres. Long ones are carried as they are
+ * Short distances are whole tens of feet or meters. Long ones are carried as they are
  * and said to one decimal place, by [oneDecimal].
  */
 sealed interface Distance {
@@ -28,9 +28,9 @@ sealed interface Distance {
 /**
  * How far it is, in the units it would be said in out loud.
  *
- * Rounded hard on purpose. The fix under this is good to a few metres on a clear day
+ * Rounded hard on purpose. The fix under this is good to a few meters on a clear day
  * and worse under trees, and the point itself is an arbitrary cell of a grid, so a
- * distance printed to the metre would be claiming a precision that nothing in the chain
+ * distance printed to the meter would be claiming a precision that nothing in the chain
  * has.
  */
 fun distance(metres: Double, units: Units): Distance = when (units) {
@@ -83,7 +83,7 @@ fun bearing(degrees: Double): Bearing =
     Bearing(cardinal(degrees), degrees.roundToInt() % 360)
 
 /**
- * Five decimal places is a bit over a metre, which is finer than the fix that produced
+ * Five decimal places is a bit over a meter, which is finer than the fix that produced
  * it and finer than anyone can stand in. It is here to be read into another app, so it
  * is written the way another app expects rather than prettily.
  */
@@ -118,7 +118,7 @@ fun reading(concentration: Double): Reading = when {
 }
 
 /**
- * The tightest accuracy the screen will claim. A phone can report a fix good to a metre or
+ * The tightest accuracy the screen will claim. A phone can report a fix good to a meter or
  * less, and "within 0 m" after rounding to tens reads as a promise nothing in the chain keeps.
  */
 const val MIN_ACCURACY_METRES = 10.0

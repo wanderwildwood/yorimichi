@@ -80,8 +80,8 @@ fun turn(from: Float, to: Float): Float {
  * How far magnetic north is from true north at [where], in degrees.
  *
  * Without this the arrow is wrong by however much the local field is skewed — around
- * eight degrees in the eastern United States, which over a two kilometre walk puts the
- * far end nearly three hundred metres off. The model is on the device and needs no
+ * eight degrees in the eastern United States, which over a two kilometer walk puts the
+ * far end nearly three hundred meters off. The model is on the device and needs no
  * network.
  */
 fun declination(where: Coord, timeMillis: Long): Float =

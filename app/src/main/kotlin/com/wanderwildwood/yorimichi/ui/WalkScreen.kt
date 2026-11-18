@@ -48,7 +48,7 @@ import com.wanderwildwood.yorimichi.walk.reading
 /**
  * The whole app: a button, and then somewhere to walk.
  *
- * There is no map on this screen and there never will be. A greyscale raster basemap
+ * There is no map on this screen and there never will be. A grayscale raster basemap
  * that pans and zooms is the worst thing this panel can be asked to draw, and the phone
  * already has an offline map that does it properly — so the coordinate is handed over
  * to that one and this screen keeps the part that is actually useful while walking: an

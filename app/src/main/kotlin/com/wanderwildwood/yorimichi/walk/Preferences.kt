@@ -12,7 +12,7 @@ enum class Units { IMPERIAL, METRIC }
 
 /**
  * Miles and feet where the country uses them (the United States, the United Kingdom, Liberia
- * and Myanmar), kilometres and metres everywhere else. Only the first-run choice: the Settings
+ * and Myanmar), kilometers and meters everywhere else. Only the first-run choice: the Settings
  * row changes it and the choice is kept.
  */
 fun unitsForCountry(country: String?): Units = when (country?.uppercase()) {
@@ -39,7 +39,7 @@ sealed interface RadiusLabel {
  * The five walks on offer.
  *
  * Five steps rather than a slider: a slider on this panel is a drag with a redraw
- * behind every pixel of it, and nobody wants 1,340 metres. They are round numbers in
+ * behind every pixel of it, and nobody wants 1,340 meters. They are round numbers in
  * whichever units are being used rather than one list converted into the other, because
  * "0.3 miles" is not a distance anyone chooses.
  */

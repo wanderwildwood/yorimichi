@@ -6,7 +6,7 @@ import com.wanderwildwood.yorimichi.core.distanceTo
 import com.wanderwildwood.yorimichi.device.Fix
 import kotlin.math.roundToInt
 
-/** Within this many metres of the point, the walk is over and the screen says so. */
+/** Within this many meters of the point, the walk is over and the screen says so. */
 const val ARRIVED_METRES = 25.0
 
 /**
@@ -17,7 +17,7 @@ const val ARRIVED_ACCURACY_METRES = 2 * ARRIVED_METRES
 
 /**
  * A position older than this, while walking, is no longer where the phone is. A walker
- * covers well over a hundred metres in it, so the distance shown can no longer be trusted
+ * covers well over a hundred meters in it, so the distance shown can no longer be trusted
  * and the screen says so instead of holding the last number.
  */
 const val WALKING_STALE_MILLIS = 60_000L

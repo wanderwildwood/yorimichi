@@ -37,7 +37,7 @@
     <!-- Button that picks a new point instead of this one -->
     <string name="walk_somewhere_else">Somewhere else</string>
 
-    <!-- Which end of the random scatter to walk to. Lower case: they are used mid-sentence after walk_within, and capitalised by the app for the settings row -->
+    <!-- Which end of the random scatter to walk to. Lower case: they are used mid-sentence after walk_within, and capitalized by the app for the settings row -->
     <string name="look_gather">where the points gather</string>
     <string name="look_thin">where they thin out</string>
 
@@ -46,8 +46,8 @@
          Every %1$s below that stands for a number is given already written out, in
          Western digits -->
 
-    <!-- Distances. %1$s is a whole number for feet and metres, and has one decimal
-         place for miles and kilometres, e.g. "0.6 mi" or "1.0 km" -->
+    <!-- Distances. %1$s is a whole number for feet and meters, and has one decimal
+         place for miles and kilometers, e.g. "0.6 mi" or "1.0 km" -->
     <string name="walk_arrived">You are here</string>
     <!-- %1$s is a distance, e.g. "80 ft" -->
     <string name="walk_arrived_within">Within %1$s of the point</string>

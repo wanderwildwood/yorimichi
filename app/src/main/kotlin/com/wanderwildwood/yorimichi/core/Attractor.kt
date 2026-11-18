@@ -219,7 +219,7 @@ private fun concentration(
     }
     squared.sort()
 
-    // Floored at a centimetre squared: k points in no area at all is an infinity, and
+    // Floored at a centimeter squared: k points in no area at all is an infinity, and
     // an infinity on the screen says less than a large number does.
     val kth = max(squared[k - 1], 0.0001)
     return (k * radiusMetres * radiusMetres) / (n * kth)
@@ -292,7 +292,7 @@ private fun choose(densities: DoubleArray, candidates: List<Int>, selector: Sele
 /**
  * Silverman's rule for a two-dimensional sample: n^(-1/(d+4)) times the spread.
  *
- * Floored well below a metre so that a degenerate sample — every point in almost the
+ * Floored well below a meter so that a degenerate sample — every point in almost the
  * same place, which a tiny radius can produce — cannot divide by zero.
  */
 private fun silvermanBandwidth(values: DoubleArray): Double {

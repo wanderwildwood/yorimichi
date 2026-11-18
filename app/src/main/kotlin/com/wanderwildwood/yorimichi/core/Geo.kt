@@ -10,7 +10,7 @@ import kotlin.math.sqrt
 data class Coord(val lat: Double, val lon: Double)
 
 /**
- * Metres in one degree of latitude, taking the earth as a sphere of radius 6371 km.
+ * Meters in one degree of latitude, taking the earth as a sphere of radius 6371 km.
  * Wrong by a few parts in a thousand, which is well inside the error of the phone's
  * own fix and far inside the error of walking to a point in a field.
  */
