@@ -17,11 +17,6 @@ already ships with.
 | ![Somewhere to go](screenshots/1-go.png) | ![A walk, and how much to trust it](screenshots/2-walk.png) |
 | ![Three settings](screenshots/3-settings.png) | ![What it does and does not claim](screenshots/4-about.png) |
 
-## Where this is up to
-
-The math is unit tested, every screen has been driven on an emulator, and the signed release
-has been installed and exercised.
-
 ## What it does
 
 - Scatters a thousand points evenly over the disc around you, estimates how thickly they
