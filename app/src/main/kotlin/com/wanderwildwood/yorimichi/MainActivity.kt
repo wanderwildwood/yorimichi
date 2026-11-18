@@ -81,6 +81,8 @@ private fun Detour(viewModel: WalkViewModel = viewModel()) {
 
     // Coming back from the system settings, where either switch may have been turned.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.resumed() }
+    // Off screen, nothing listens: the GPS and the compass start again on the way back.
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.stopped() }
 
     val preferences = remember(context) { Preferences(context) }
     var safetyOpen by remember { mutableStateOf(!preferences.safetySeen) }

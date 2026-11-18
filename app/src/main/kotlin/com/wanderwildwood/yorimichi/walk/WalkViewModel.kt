@@ -196,17 +196,27 @@ class WalkViewModel(
         }
     }
 
+    /**
+     * Off screen: the GPS, the network location and the compass are let go, so that a phone in a
+     * pocket, or one handed over to the map app, is not kept listening for a screen nobody sees.
+     * [resumed] starts them again.
+     */
+    fun stopped() {
+        watching?.cancel()
+        watching = null
+    }
+
     private fun watch() {
         if (watching != null) return
         val app = getApplication<Application>()
 
         // Something to start from at once, before the sky has been asked anything: the
-        // newest of whatever the phone still remembers and what this app wrote down last
-        // time. The screen says how old it is.
+        // newest of the position already held, whatever the phone still remembers and what
+        // this app wrote down last time. The screen says how old it is.
         // One stamped later than now (a clock set back since) would read as fresh and hold off
         // every live fix, so it is left out.
         val now = System.currentTimeMillis()
-        val remembered = listOfNotNull(lastKnown(app), preferences.lastFix)
+        val remembered = listOfNotNull(_state.value.fix, lastKnown(app), preferences.lastFix)
             .filter { it.timeMillis <= now }
             .maxByOrNull { it.timeMillis }
         _state.update {
