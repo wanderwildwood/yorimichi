@@ -256,7 +256,9 @@ class WalkViewModel(
                         val now = System.currentTimeMillis()
                         if (accept(it.fix, fix, now)) it.copy(fix = fix, now = now) else it
                     }
-                    remember(fix)
+                    // Only a fix the screen took is written down: a coarse one it turned away
+                    // must not replace a good one for the next start.
+                    if (_state.value.fix === fix) remember(fix)
                 }
             }
             launch {
