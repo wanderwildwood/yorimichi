@@ -15,7 +15,7 @@ already ships with.
 | | |
 |---|---|
 | ![Somewhere to go](screenshots/1-go.png) | ![A walk, and how much to trust it](screenshots/2-walk.png) |
-| ![Three settings](screenshots/3-settings.png) | ![What it does and does not claim](screenshots/4-about.png) |
+| ![Settings](screenshots/3-settings.png) | ![What it does and does not claim](screenshots/4-about.png) |
 
 ## What it does
 
@@ -30,7 +30,9 @@ already ships with.
   runs come back somewhere ordinary, and it says so rather than dressing the answer up.
 - Says how good the fix under it is, and how old, because a walk scattered around where the
   phone was twenty minutes ago is a different walk.
-- Walks of ¼ mile to 5 miles, or 500 m to 10 km. Two words of settings otherwise.
+- Walks of ¼ mile to 5 miles, or 500 m to 10 km. Four settings in all: how far, where the
+  points gather or thin out, miles or kilometers, and dark mode, which follows the phone's dark
+  setting unless you switch it.
 
 ## A hundred years of this
 
