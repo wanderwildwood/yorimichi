@@ -197,7 +197,7 @@ class WalkViewModel(
             watch()
             // Whatever the phone learned while the screen was away.
             lastKnown(app)?.let { known ->
-                _state.update { if (accept(it.fix, known)) it.copy(fix = known) else it }
+                _state.update { if (accept(it.fix, known, System.currentTimeMillis())) it.copy(fix = known) else it }
             }
         }
     }
@@ -253,7 +253,8 @@ class WalkViewModel(
             launch {
                 fixes(app).collect { fix ->
                     _state.update {
-                        if (accept(it.fix, fix)) it.copy(fix = fix, now = System.currentTimeMillis()) else it
+                        val now = System.currentTimeMillis()
+                        if (accept(it.fix, fix, now)) it.copy(fix = fix, now = now) else it
                     }
                     remember(fix)
                 }
@@ -283,7 +284,8 @@ class WalkViewModel(
     /** Write a fresh fix down, now and then, for the next time the sky cannot be found. */
     private fun remember(fix: Fix) {
         if (fix.ageMillis(System.currentTimeMillis()) > FRESH_MILLIS) return
-        if (fix.timeMillis - savedAt < SAVE_EVERY_MILLIS) return
+        // A fix stamped before the last one written means the clock was set back: write it.
+        if (fix.timeMillis >= savedAt && fix.timeMillis - savedAt < SAVE_EVERY_MILLIS) return
         preferences.lastFix = fix
         savedAt = fix.timeMillis
     }

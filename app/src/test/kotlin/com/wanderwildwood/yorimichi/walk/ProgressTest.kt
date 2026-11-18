@@ -10,6 +10,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ProgressTest {
+    private companion object {
+        /** A clock well past every fix below, unless a test says otherwise. */
+        const val NOW = 10_000_000L
+    }
+
     private val point = Coord(10.0, 20.0)
     private fun fix(c: Coord, t: Long = 1_000_000L, acc: Float = 8f, gps: Boolean = false) = Fix(c, acc, t, gps)
 
@@ -50,25 +55,35 @@ class ProgressTest {
     @Test
     fun `a newer fix replaces an older one and an older one never does`() {
         val old = fix(point, t = 10_000)
-        assertTrue(accept(null, old))
-        assertTrue(accept(old, fix(point, t = 11_000)))
-        assertFalse(accept(old, fix(point, t = 9_000)))
+        assertTrue(accept(null, old, now = NOW))
+        assertTrue(accept(old, fix(point, t = 11_000), now = NOW))
+        assertFalse(accept(old, fix(point, t = 9_000), now = NOW))
+    }
+
+    @Test
+    fun `a clock set back does not freeze the position on the fix held from before`() {
+        // Held at 100 s by the old clock; the clock has since gone back to 50 s.
+        val held = fix(point, t = 100_000, acc = 6f, gps = true)
+        assertTrue(accept(held, fix(point, t = 49_000, acc = 6f, gps = true), now = 50_000))
+        assertTrue(accept(held, fix(point, t = 49_000, acc = 900f), now = 50_000))
+        // With the clock where it was, an older fix is still refused.
+        assertFalse(accept(held, fix(point, t = 99_000, gps = true), now = 101_000))
     }
 
     @Test
     fun `a coarse network fix does not displace a good gps fix unless the gps has gone quiet`() {
         val gps = fix(point, t = 100_000, acc = 6f, gps = true)
-        assertFalse(accept(gps, fix(point, t = 103_000, acc = 900f)))
-        assertTrue(accept(gps, fix(point, t = 100_000 + QUIET_GPS_MILLIS, acc = 900f)))
-        assertTrue(accept(gps, fix(point, t = 103_000, acc = 5f)))
+        assertFalse(accept(gps, fix(point, t = 103_000, acc = 900f), now = NOW))
+        assertTrue(accept(gps, fix(point, t = 100_000 + QUIET_GPS_MILLIS, acc = 900f), now = NOW))
+        assertTrue(accept(gps, fix(point, t = 103_000, acc = 5f), now = NOW))
     }
 
     @Test
     fun `a newer gps fix is taken even when it is a little less sure`() {
         val held = fix(point, t = 100_000, acc = 6f, gps = true)
-        assertTrue(accept(held, fix(point, t = 101_000, acc = 9f, gps = true)))
+        assertTrue(accept(held, fix(point, t = 101_000, acc = 9f, gps = true), now = NOW))
         // A precise fix remembered from earlier does not hold off the live GPS either.
-        assertTrue(accept(fix(point, t = 100_000, acc = 3f), fix(point, t = 101_000, acc = 12f, gps = true)))
+        assertTrue(accept(fix(point, t = 100_000, acc = 3f), fix(point, t = 101_000, acc = 12f, gps = true), now = NOW))
     }
 
     @Test

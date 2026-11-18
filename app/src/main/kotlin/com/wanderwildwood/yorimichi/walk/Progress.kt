@@ -48,9 +48,14 @@ fun staleWhileWalking(fix: Fix?, now: Long): Boolean =
  * Whether [incoming] should replace [current]. Several providers report at once and a
  * coarse network position must not drag the arrow back from a good GPS one. A newer fix from
  * the GPS always does, even a little less sure than the last: that is the walker moving.
+ *
+ * Fixes are stamped by the wall clock. One held from later than [now] means the clock has been
+ * set back since, and every live fix would look older than it until the clock caught up, so
+ * anything new replaces it.
  */
-fun accept(current: Fix?, incoming: Fix): Boolean = when {
+fun accept(current: Fix?, incoming: Fix, now: Long): Boolean = when {
     current == null -> true
+    current.timeMillis > now -> true
     incoming.timeMillis < current.timeMillis -> false
     incoming.gps || !current.gps -> true
     incoming.accuracyMetres <= current.accuracyMetres -> true
