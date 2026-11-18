@@ -64,8 +64,8 @@ what it has ever suggested.
 
 "Open in maps" hands the **destination** coordinate to whatever map application you have
 installed, using a standard `geo:` intent. That app then knows the coordinate, and since the
-destination is by construction within a mile or so of you, it can infer roughly where you
-are.
+destination is by construction within the walk's distance of you (at most 5 miles or 10 km), it
+can infer roughly where you are.
 
 This only happens when you press that button. If you never press it, nothing ever crosses the
 boundary. If you would rather it did not, the coordinate is also printed on the screen and
