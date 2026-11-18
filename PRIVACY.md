@@ -60,7 +60,7 @@ what it has ever suggested.
 
 `android:allowBackup="false"` is set, so not even that goes to a cloud backup.
 
-## The one place something leaves the app
+## What leaves the app, and only when you press it
 
 "Open in maps" hands the **destination** coordinate to whatever map application you have
 installed, using a standard `geo:` intent. That app then knows the coordinate, and since the
@@ -73,6 +73,11 @@ you can take it wherever you like by hand.
 
 What that map application does with the coordinate is between you and its own privacy policy,
 which is unlikely to be as short as this one.
+
+The links in About, the "Feed the llamas" donation page among them, open your browser at a
+fixed address, and the contact row opens your email app addressed to the developer, with the
+app's name and version as the subject. They carry nothing about you, and nothing is opened
+unless you press one.
 
 ## No third-party services
 
@@ -93,7 +98,7 @@ You do not have to take any of it on trust:
 <!-- shared-about privacy section -->
 ## Who we are
 
-Detour is made by wander wildwood, an independent developer: one person, not a company. wander wildwood is the data controller for anything the app itself handles, and that is very little. What you put in Detour stays on your phone. The app has no internet access, so it makes no requests of any kind; the only thing that ever leaves it is a destination you choose to hand to your map app. The developer receives nothing, so holds no data about you.
+Detour is made by wander wildwood, an independent developer: one person, not a company. wander wildwood is the data controller for anything the app itself handles, and that is very little. What you put in Detour stays on your phone. The app has no internet access, so it makes no requests of any kind; the only things that ever leave it are a destination you choose to hand to your map app and, when you press them, the links in About, which open your browser or email app at a fixed address. The developer receives nothing, so holds no data about you.
 
 ## How to contact us
 
