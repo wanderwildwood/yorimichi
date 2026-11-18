@@ -108,6 +108,25 @@ internal fun attractorFromSaved(saved: DoubleArray?): Attractor? {
     )
 }
 
+/**
+ * Whether a refusal just given is one Android will not ask about again, so that only the app's
+ * page in the system settings is left.
+ *
+ * Android only says so indirectly: it shows its reason for asking ([reasonAfter]) after one
+ * refusal and stops when it has stopped asking. No reason after the answer is a refusal for good
+ * when there was one before it ([reasonBefore]), when the answer came at once with no dialog
+ * ([atOnce]), or when an earlier refusal is on record ([refusedEarlier]), as in a later run after
+ * Android stopped asking, when the reason is gone both before and after. Otherwise it is a dialog
+ * closed with Back, and the button asks again.
+ */
+internal fun refusedForGood(
+    granted: Boolean,
+    reasonBefore: Boolean,
+    reasonAfter: Boolean,
+    atOnce: Boolean,
+    refusedEarlier: Boolean,
+): Boolean = !granted && !reasonAfter && (reasonBefore || atOnce || refusedEarlier)
+
 class WalkViewModel(
     application: Application,
     private val saved: SavedStateHandle,
@@ -140,11 +159,19 @@ class WalkViewModel(
     }
 
     /**
-     * Called when the permission dialog has been answered. [canAskAgain] is false when
-     * Android has stopped showing the dialog, after a second refusal or a "don't ask".
+     * Called when the permission dialog has been answered. [reasonBefore] and [reasonAfter] are
+     * whether Android would show its reason for asking just before the question and just after
+     * the answer; [atOnce] is an answer too quick for any dialog to have been shown.
      */
-    fun permissionAnswered(granted: Boolean, canAskAgain: Boolean) {
-        _state.update { it.copy(permitted = granted, refusedForGood = !granted && !canAskAgain) }
+    fun permissionAnswered(granted: Boolean, reasonBefore: Boolean, reasonAfter: Boolean, atOnce: Boolean) {
+        val forGood = refusedForGood(granted, reasonBefore, reasonAfter, atOnce, preferences.locationRefused)
+        // A refusal Android counted (it would explain itself next time), or one it has stopped asking
+        // after, is written down for a later run; a grant clears it.
+        when {
+            granted -> preferences.locationRefused = false
+            reasonAfter || forGood -> preferences.locationRefused = true
+        }
+        _state.update { it.copy(permitted = granted, refusedForGood = forGood) }
         if (granted) watch()
     }
 
@@ -160,6 +187,7 @@ class WalkViewModel(
             )
         }
         if (permitted) {
+            preferences.locationRefused = false
             watch()
             // Whatever the phone learned while the screen was away.
             lastKnown(app)?.let { known ->

@@ -72,14 +72,11 @@ private fun Detour(viewModel: WalkViewModel = viewModel()) {
         // Detour needs the precise one; "approximate" alone is not enough, and is answered like a refusal.
         val granted = answers[Manifest.permission.ACCESS_FINE_LOCATION] == true
         // Asked straight after a refusal, Android only answers true here when it would
-        // still show the dialog. False means it has stopped asking, and the system
-        // settings are the only way left.
-        val canAskAgain = activity.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)
-        // Refused for good only when Android stopped asking just now (it would have before),
-        // or answered at once with no dialog at all. A dialog closed with Back is neither.
-        val wouldBefore = asked[0] == 1L
+        // still show the dialog. False can mean it has stopped asking, or that the dialog was
+        // closed with Back: the view model tells the two apart (see refusedForGood).
+        val reasonAfter = activity.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)
         val atOnce = android.os.SystemClock.elapsedRealtime() - asked[1] < 300
-        viewModel.permissionAnswered(granted, canAskAgain || !(wouldBefore || atOnce))
+        viewModel.permissionAnswered(granted, asked[0] == 1L, reasonAfter, atOnce)
     }
 
     // Coming back from the system settings, where either switch may have been turned.

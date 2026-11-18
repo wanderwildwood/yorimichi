@@ -116,6 +116,15 @@ class Preferences(context: Context) {
             edit.apply()
         }
 
+    /**
+     * Whether the location permission has been refused since it was last granted. Android does
+     * not say, in a later run, whether it has stopped asking, so this is what tells a refusal
+     * given for good apart from a dialog closed with Back.
+     */
+    var locationRefused: Boolean
+        get() = store.getBoolean(LOCATION_REFUSED, false)
+        set(value) = store.edit().putBoolean(LOCATION_REFUSED, value).apply()
+
     /** Whether the first-run safety notice has been read. */
     var safetySeen: Boolean
         get() = store.getBoolean(SAFETY_SEEN, false)
@@ -123,6 +132,7 @@ class Preferences(context: Context) {
 
     private companion object {
         const val SAFETY_SEEN = "safety_seen"
+        const val LOCATION_REFUSED = "location_refused"
         const val RADIUS = "radius"
         const val LOOK = "look"
         const val UNITS = "units"
