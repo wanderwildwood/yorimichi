@@ -117,9 +117,9 @@ class Preferences(context: Context) {
         }
 
     /**
-     * Whether the location permission has been refused since it was last granted. Android does
-     * not say, in a later run, whether it has stopped asking, so this is what tells a refusal
-     * given for good apart from a dialog closed with Back.
+     * Whether the last answer to the location permission was a refusal Android stopped asking
+     * after. Android does not say, in a later run, whether it has stopped asking, so this is what
+     * tells a refusal given for good apart from a dialog closed with Back.
      */
     var locationRefused: Boolean
         get() = store.getBoolean(LOCATION_REFUSED, false)

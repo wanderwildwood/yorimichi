@@ -124,6 +124,14 @@ internal fun attractorFromSaved(saved: DoubleArray?): Attractor? {
  * ([atOnce]), or when an earlier refusal is on record ([refusedEarlier]), as in a later run after
  * Android stopped asking, when the reason is gone both before and after. Otherwise it is a dialog
  * closed with Back, and the button asks again.
+ *
+ * Only a refusal for good goes on record, and any later refusal Android would ask about again
+ * takes it off, so a first refusal followed by "Ask every time" in the system settings still
+ * reads a closed dialog as Back. One case is left that Android gives no way to see: after a
+ * refusal for good, the permission reset by Android (unused apps) or set back to "Ask every
+ * time", a dialog closed with Back reads as a refusal for good. The app's settings page shown
+ * then still works, and the record is not kept past the next answer that is not a refusal for
+ * good, nor is the screen kept past a restart.
  */
 internal fun refusedForGood(
     granted: Boolean,
@@ -171,12 +179,11 @@ class WalkViewModel(
      */
     fun permissionAnswered(granted: Boolean, reasonBefore: Boolean, reasonAfter: Boolean, atOnce: Boolean) {
         val forGood = refusedForGood(granted, reasonBefore, reasonAfter, atOnce, preferences.locationRefused)
-        // A refusal Android counted (it would explain itself next time), or one it has stopped asking
-        // after, is written down for a later run; a grant clears it.
-        when {
-            granted -> preferences.locationRefused = false
-            reasonAfter || forGood -> preferences.locationRefused = true
-        }
+        // Only a refusal Android has stopped asking after is written down for a later run. A refusal
+        // it would still ask about shows its reason before the next question, so needs no record,
+        // and anything short of a refusal for good (a grant, a refusal with the reason showing
+        // again, Back) takes the record off.
+        preferences.locationRefused = forGood
         _state.update { it.copy(permitted = granted, refusedForGood = forGood) }
         if (granted) watch()
     }
