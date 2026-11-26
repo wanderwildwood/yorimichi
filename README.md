@@ -14,8 +14,8 @@ already ships with.
 
 | | |
 |---|---|
-| ![Somewhere to go](screenshots/1-go.png) | ![A walk, and how much to trust it](screenshots/2-walk.png) |
-| ![Settings](screenshots/3-settings.png) | ![What it does and does not claim](screenshots/4-about.png) |
+| ![Before setting off: how far, and where](screenshots/1-start.png) | ![Somewhere to go](screenshots/2-go.png) |
+| ![Settings](screenshots/3-settings.png) | ![Somewhere to go, in dark mode](screenshots/4-dark.png) |
 
 ## What it does
 
